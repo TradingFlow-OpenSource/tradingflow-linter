@@ -429,7 +429,11 @@ export class TFLLint {
       if (edge.source && edge.sourceHandle && nodeMap.has(edge.source)) {
         const sourceNode = nodeMap.get(edge.source)!;
         const sourceOutputs = (sourceNode.outputs || []).map(output => output.id);
-        if (!sourceOutputs.includes(edge.sourceHandle)) {
+        // Strip -handle suffix for validation (frontend uses field_name-handle format)
+        const handleToCheck = edge.sourceHandle.endsWith('-handle') 
+          ? edge.sourceHandle.slice(0, -7) 
+          : edge.sourceHandle;
+        if (!sourceOutputs.includes(handleToCheck)) {
           issues.push({
             severity: "error",
             message: `Edge references non-existent output handle ${edge.sourceHandle} on node ${edge.source}`,
@@ -443,7 +447,11 @@ export class TFLLint {
       if (edge.target && edge.targetHandle && nodeMap.has(edge.target)) {
         const targetNode = nodeMap.get(edge.target)!;
         const targetInputs = (targetNode.inputs || []).map(input => input.id);
-        if (!targetInputs.includes(edge.targetHandle)) {
+        // Strip -handle suffix for validation (frontend uses field_name-handle format)
+        const handleToCheck = edge.targetHandle.endsWith('-handle') 
+          ? edge.targetHandle.slice(0, -7) 
+          : edge.targetHandle;
+        if (!targetInputs.includes(handleToCheck)) {
           issues.push({
             severity: "error",
             message: `Edge references non-existent input handle ${edge.targetHandle} on node ${edge.target}`,
