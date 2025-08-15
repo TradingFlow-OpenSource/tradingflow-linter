@@ -3,6 +3,7 @@ import { FlowData, Node, Edge, NodeType, NodeDefinition, Position, NodeInput, No
 
 export interface LintOptions {
   strict?: boolean;
+  mode?: 'flow' | 'node'; // 执行模式：flow = 完整流程校验，node = 单节点校验
 }
 
 export type LintSeverity = "error" | "warning";
@@ -166,11 +167,15 @@ export class TFLLint {
     // 检查节点
     issues.push(...this.lintNodes(data.nodes));
 
-    // 检查边
-    issues.push(...this.lintEdges(data.edges, data.nodes));
+    // 检查边 - 在 node 模式下跳过边有效性检查
+    if (this.options?.mode !== 'node') {
+      issues.push(...this.lintEdges(data.edges, data.nodes));
+    }
 
-    // 检查流程完整性
-    issues.push(...this.lintFlowIntegrity(data));
+    // 检查流程完整性 - 在 node 模式下跳过流程完整性检查
+    if (this.options?.mode !== 'node') {
+      issues.push(...this.lintFlowIntegrity(data));
+    }
 
     return issues;
   }
@@ -251,8 +256,8 @@ export class TFLLint {
         issues.push(...this.lintNodeInputsOutputs(node, NODE_DEFINITIONS[node.type as NodeType]));
       }
 
-      // 检查位置重叠
-      if (node.position) {
+      // 检查位置重叠 - 在 node 模式下跳过位置重叠检查
+      if (node.position && this.options?.mode !== 'node') {
         nodes.forEach((otherNode) => {
           if (
             node.id !== otherNode.id &&
@@ -574,4 +579,20 @@ export class TFLLint {
   getSupportedNodeTypes(): NodeType[] {
     return Object.keys(NODE_DEFINITIONS) as NodeType[];
   }
+}
+
+/**
+ * 便捷函数：使用默认选项进行 linting
+ */
+export function lintFlow(data: FlowData, options?: LintOptions): LintIssue[] {
+  const linter = new TFLLint(options);
+  return linter.lintFlow(data);
+}
+
+/**
+ * 便捷函数：专门用于单节点执行的 linting
+ */
+export function lintNodeExecution(data: FlowData, options?: Omit<LintOptions, 'mode'>): LintIssue[] {
+  const linter = new TFLLint({ ...options, mode: 'node' });
+  return linter.lintFlow(data);
 }
