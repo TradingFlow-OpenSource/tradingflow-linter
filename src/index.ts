@@ -1,5 +1,5 @@
 export * from './types';
-import { FlowData, Node, Edge, NodeType, NodeDefinition, Position, NodeInput, NodeOutput } from './types';
+import { FlowData, Node, Edge, NodeType, NodeDefinition, Position } from './types';
 
 export interface LintOptions {
   strict?: boolean;
@@ -51,7 +51,7 @@ const NODE_DEFINITIONS: Record<NodeType, NodeDefinition> = {
     optionalInputs: ['keywords'],
     outputs: ['latest tweets']
   },
-  
+
   // Compute Nodes
   'ai_model_node': {
     type: 'ai_model_node',
@@ -69,7 +69,7 @@ const NODE_DEFINITIONS: Record<NodeType, NodeDefinition> = {
     optionalInputs: ['input_data'],
     outputs: ['output_data', 'debug_output']
   },
-  
+
   // Trade Nodes
   'swap_node': {
     type: 'swap_node',
@@ -103,7 +103,7 @@ const NODE_DEFINITIONS: Record<NodeType, NodeDefinition> = {
     optionalInputs: [],
     outputs: ['vault_balance', 'vault_address', 'chain']
   },
-  
+
   // Output Nodes
   'dataset_output_node': {
     type: 'dataset_output_node',
@@ -435,8 +435,8 @@ export class TFLLint {
         const sourceNode = nodeMap.get(edge.source)!;
         const sourceOutputs = (sourceNode.outputs || []).map(output => output.id);
         // Strip -handle suffix for validation (frontend uses field_name-handle format)
-        const handleToCheck = edge.sourceHandle.endsWith('-handle') 
-          ? edge.sourceHandle.slice(0, -7) 
+        const handleToCheck = edge.sourceHandle.endsWith('-handle')
+          ? edge.sourceHandle.slice(0, -7)
           : edge.sourceHandle;
         if (!sourceOutputs.includes(handleToCheck)) {
           issues.push({
@@ -453,8 +453,8 @@ export class TFLLint {
         const targetNode = nodeMap.get(edge.target)!;
         const targetInputs = (targetNode.inputs || []).map(input => input.id);
         // Strip -handle suffix for validation (frontend uses field_name-handle format)
-        const handleToCheck = edge.targetHandle.endsWith('-handle') 
-          ? edge.targetHandle.slice(0, -7) 
+        const handleToCheck = edge.targetHandle.endsWith('-handle')
+          ? edge.targetHandle.slice(0, -7)
           : edge.targetHandle;
         if (!targetInputs.includes(handleToCheck)) {
           issues.push({
@@ -557,7 +557,7 @@ export class TFLLint {
   private checkPositionOverlap(pos1: Position, pos2: Position): boolean {
     const NODE_WIDTH = 100;
     const NODE_HEIGHT = 50;
-    
+
     return (
       pos1.x < pos2.x + NODE_WIDTH &&
       pos1.x + NODE_WIDTH > pos2.x &&
