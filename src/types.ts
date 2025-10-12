@@ -1,19 +1,45 @@
-// TFL Essential Version Types
+/**
+ * TradingFlow Weather Linter - Type Definitions
+ * 
+ * 导出所有 Weather 相关的类型定义
+ */
+
+// 导出完整的 Weather 类型系统
+export * from './types/weather';
+export * from './types/converters';
+export * from './types/utils';
+
+// ============================================================================
+// 向后兼容的旧类型 (Deprecated - 使用 weather.ts 中的类型)
+// ============================================================================
+
+/**
+ * @deprecated 使用 Position from './types/weather'
+ */
 export interface Position {
   x: number;
   y: number;
 }
 
+/**
+ * @deprecated 使用 EssentialInput from './types/weather'
+ */
 export interface NodeInput {
   id: string;
-  value: any;
+  value: unknown;
 }
 
+/**
+ * @deprecated 使用 EssentialOutput from './types/weather'
+ */
 export interface NodeOutput {
   id: string;
   isDeleted: boolean;
 }
 
+/**
+ * @deprecated 使用 EssentialNode from './types/weather'
+ */
 export interface Node {
   id: string;
   type: string;
@@ -22,24 +48,32 @@ export interface Node {
   description?: string;
   inputs?: NodeInput[];
   outputs?: NodeOutput[];
-  data?: Record<string, any>;
-  [key: string]: any;
+  data?: Record<string, unknown>;
+  [key: string]: unknown;
 }
 
+/**
+ * @deprecated 使用 EssentialEdge from './types/weather'
+ */
 export interface Edge {
   source: string;
   sourceHandle: string;
   target: string;
   targetHandle: string;
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
+/**
+ * @deprecated 使用 EssentialFlow from './types/weather'
+ */
 export interface FlowData {
   nodes: Node[];
   edges: Edge[];
 }
 
-// 支持的节点类型
+/**
+ * @deprecated 使用 NodeType from './types/weather'
+ */
 export type NodeType = 
   // Input Nodes
   | 'binance_price_node'
@@ -58,7 +92,9 @@ export type NodeType =
   | 'dataset_output_node'
   | 'telegram_sender_node';
 
-// 节点定义接口
+/**
+ * @deprecated 创建新的节点定义接口在 weather.ts
+ */
 export interface NodeDefinition {
   type: NodeType;
   description: string;
