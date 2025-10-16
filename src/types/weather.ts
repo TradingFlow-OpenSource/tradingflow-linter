@@ -472,6 +472,7 @@ export interface EditorFullInput extends Omit<FullInput, 'preload'> {
     error?: string;
     lastLoadTime?: number;
     cachedData?: unknown;
+    lastDependencies?: any[];  // 上次 preload 时的 dependencies 值
   };
 }
 
