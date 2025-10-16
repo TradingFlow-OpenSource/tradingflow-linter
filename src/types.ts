@@ -2,12 +2,14 @@
  * TradingFlow Weather Linter - Type Definitions
  * 
  * 导出所有 Weather 相关的类型定义
+ * 
+ * 注：转换实现（converters）和工具函数（utils）已移至前端
+ * linter 包仅提供类型定义
  */
 
 // 导出完整的 Weather 类型系统
 export * from './types/weather';
-export * from './types/converters';
-export * from './types/utils';
+// converters 和 utils 已废弃 - 转换逻辑应在前端实现
 
 // ============================================================================
 // 向后兼容的旧类型 (Deprecated - 使用 weather.ts 中的类型)

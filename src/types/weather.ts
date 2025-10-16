@@ -34,14 +34,26 @@ export type InputType =
 
 /**
  * 数据类型
+ * 包含所有前端 UI 控件支持的数据类型
  */
 export type DataType =
+  | 'none'
   | 'text'
   | 'number'
+  | 'select'
+  | 'multiselect'
   | 'object'
+  | 'paragraph'
+  | 'address'
+  | 'searchSelect'
+  | 'paramMatrix'
+  | 'radio'
+  | 'radioGroup'
+  | 'button'
   | 'array'
   | 'boolean'
-  | 'paragraph';
+  | 'wallet'  // 钱包地址类型
+  | 'chain';  // 区块链类型
 
 /**
  * Handle 颜色（连接句柄颜色）
@@ -109,30 +121,30 @@ export interface HandleConfig {
 
 /**
  * Essential: 输入参数配置
+ * 仅包含核心业务数据，不包含 UI 配置（handle, options）
  */
 export interface EssentialInput {
   id: string;
   title: string;
   type: DataType;
   inputType: InputType;
-  required: boolean;
-  placeholder: string;
-  handle: HandleConfig;
-  value: unknown;  // 可以是任何类型的值
-  options?: Array<string | { value: string; label: string; disabled?: boolean; tooltip?: string }>;
+  required?: boolean;  // 可选，默认 false
+  placeholder?: string;  // 可选
+  value?: unknown;  // 可选，可以是任何类型的值
   min?: number;  // 用于数字类型验证
   max?: number;  // 用于数字类型验证
 }
 
 /**
  * Essential: 输出定义
+ * 仅包含核心业务数据，不包含 UI 配置（handle）
  */
 export interface EssentialOutput {
   id: string;
   title: string;
   type: DataType;
-  handle: HandleConfig;
   description?: string;
+  isDeleted?: boolean;  // 用户是否折叠/删除此输出（agent 生成、后端存储需要）
 }
 
 /**
@@ -182,9 +194,14 @@ export interface EssentialFlow {
 // ============================================================================
 
 /**
- * Full: 输入参数配置 (扩展版)
+ * Full: 输入参数配置 (扩展版 - 添加 UI 配置)
  */
 export interface FullInput extends EssentialInput {
+  // UI 配置（从 nodeConfig 加载，不从 Essential 存储）
+  handle: HandleConfig;
+  options?: Array<string | { value: string; label: string; disabled?: boolean; tooltip?: string }>;
+  
+  // Full 层扩展字段
   isDeleted?: boolean;  // 删除标记
   disabled?: boolean;   // 禁用状态
   _actualValue?: unknown;  // 实际值（用于显示值与实际值不同的情况）
@@ -215,10 +232,12 @@ export interface FullInput extends EssentialInput {
 }
 
 /**
- * Full: 输出定义 (扩展版)
+ * Full: 输出定义 (扩展版 - 添加 UI 配置)
+ * 注：isDeleted 已在 EssentialOutput 中定义
  */
 export interface FullOutput extends EssentialOutput {
-  isDeleted?: boolean;
+  // UI 配置（从 nodeConfig 加载，不从 Essential 存储）
+  handle: HandleConfig;
 }
 
 /**
@@ -245,43 +264,32 @@ export interface HandleSignal {
 }
 
 /**
- * Full: 节点数据 (扩展版)
+ * Full: 节点数据 (接口层 - 仅定义结构，无具体实现)
+ * 注：Full 层仅作为 Essential 和 EditorFull 之间的接口桥梁
  */
 export interface FullNodeData extends EssentialNodeData {
   inputs: FullInput[];
   outputs: FullOutput[];
   id: string;  // 冗余字段，与节点ID相同
   edges: FullEdge[];  // 节点相关的边（冗余，顶层已有）
-  menuItems?: MenuItem[];  // 右键菜单项
-  isDeepEdit?: boolean;  // 深度编辑模式
-  isFlowExecuting?: boolean;  // 执行状态
-  isStopping?: boolean;  // 停止状态
-  signals?: HandleSignal[];  // 运行时信号数据
 }
 
 /**
- * Full: 节点定义 (扩展版)
+ * Full: 节点定义 (接口层)
  */
 export interface FullNode extends EssentialNode {
   data: FullNodeData;
-  className?: string;  // CSS 类名
-  width?: number;  // 节点宽度
-  height?: number;  // 节点高度
-  selected?: boolean;  // 选中状态
-  positionAbsolute?: Position;  // 绝对位置（计算值）
-  dragging?: boolean;  // 拖拽状态
 }
 
 /**
- * Full: 边定义 (扩展版)
+ * Full: 边定义 (接口层)
  */
 export interface FullEdge extends EssentialEdge {
   type?: EdgeType;  // 边类型（样式）
-  animated?: boolean;  // 动画效果
 }
 
 /**
- * Full: 完整工作流 (扩展版)
+ * Full: 完整工作流 (接口层)
  */
 export interface FullFlow extends EssentialFlow {
   nodes: FullNode[];
@@ -384,6 +392,163 @@ export interface FlowStats {
   executionCount: number;
   lastExecutedAt?: string;
   averageExecutionTime?: number;
+}
+
+// ============================================================================
+// EditorFull 版本类型 (编辑器扩展版 - 用于前端编辑器)
+// ============================================================================
+
+/**
+ * EditorFull: 差异追踪辅助类型
+ */
+export interface EditorDiff<T = unknown> {
+  oldValue: T;
+  newValue: T;
+  accepted?: boolean;
+  preview?: boolean;
+}
+
+/**
+ * EditorFull: 前端预加载配置
+ * 用于编辑器的异步数据加载
+ */
+export interface EditorPreloadConfig {
+  loader: () => Promise<unknown>;
+  processor?: (data: unknown) => Array<string | { value: string; label: string; disabled?: boolean; tooltip?: string; [key: string]: any }>;
+  errorHandler?: (error: unknown) => string;
+  retry?: {
+    times: number;
+    delay: number;
+  };
+  cache?: {
+    enabled: boolean;
+    duration: number;
+    key?: string;
+  };
+  dependencies?: string[];
+  loadingText?: string;
+  autoload?: boolean;
+}
+
+/**
+ * EditorFull: 输入参数配置 (编辑器扩展版)
+ * 在 FullInput 基础上添加编辑器特定功能
+ */
+export interface EditorFullInput extends Omit<FullInput, 'preload'> {
+  // 差异追踪字段
+  titleDiff?: EditorDiff<string>;
+  tooltipDiff?: EditorDiff<string>;
+  typeDiff?: EditorDiff<DataType>;
+  requiredDiff?: EditorDiff<boolean>;
+  placeholderDiff?: EditorDiff<string>;
+  valueDiff?: EditorDiff<unknown>;
+  optionsDiff?: EditorDiff<Array<string | { value: string; label: string; disabled?: boolean; tooltip?: string }>>;
+  handleDiff?: EditorDiff<{ color?: string }>;
+  
+  // 编辑器特定字段
+  tooltip?: string;  // 提示文本
+  className?: string;  // CSS 类名
+  chainRef?: string;  // 关联的链选择输入的 ID
+  
+  // 使用前端的预加载配置
+  preload?: EditorPreloadConfig;
+  
+  // 扩展实例状态 - 添加连接状态
+  _instanceState?: {
+    // FullInput 的预加载状态
+    hasLoaded?: boolean;
+    error?: string;
+    lastLoadTime?: number;
+    cachedData?: unknown;
+    // 编辑器扩展：连接状态
+    isConnected?: boolean;
+    connectedHandles?: string[];
+  };
+  
+  // 兼容旧代码的预加载状态
+  _preloadState?: {
+    isLoading?: boolean;
+    hasLoaded?: boolean;
+    error?: string;
+    lastLoadTime?: number;
+    cachedData?: unknown;
+  };
+}
+
+/**
+ * EditorFull: 输出定义 (编辑器扩展版)
+ */
+export interface EditorFullOutput extends FullOutput {
+  // 差异追踪字段
+  titleDiff?: EditorDiff<string>;
+  typeDiff?: EditorDiff<DataType>;
+  handleDiff?: EditorDiff<{ color?: string }>;
+}
+
+/**
+ * EditorFull: 节点数据 (编辑器扩展版 - 包含所有前端实现字段)
+ */
+export interface EditorFullNodeData extends Omit<FullNodeData, 'inputs' | 'outputs' | 'collection' | 'signals'> {
+  inputs: EditorFullInput[];
+  outputs: EditorFullOutput[];
+  collection: string | null;  // 编辑器中 collection 可以为 null
+  signals?: unknown[];  // 编辑器使用自己的 NodeSignal 类型
+  
+  // 编辑器实现字段
+  menuItems?: MenuItem[];  // 右键菜单项
+  isDeepEdit?: boolean;  // 深度编辑模式
+  isFlowExecuting?: boolean;  // 流程执行状态
+  isStopping?: boolean;  // 停止状态
+  handleDeleteNode?: (nodeId: string) => void;  // 删除节点回调
+  onDataChange?: (nodeId: string, data: any) => void;  // 数据变更回调
+  onRunOnce?: () => void;  // 单次运行回调
+  isLocked?: boolean;  // 锁定状态
+  icon?: unknown;  // React.ReactNode - 节点图标
+  
+  // 执行状态信息
+  executionInfo?: {
+    status: string;  // 节点状态：idle, pending, running, completed, failed, skipped, terminated, etc.
+    error?: string | null;
+    timestamp?: string;
+    metadata?: Record<string, unknown>;
+    startTime?: string;
+    endTime?: string;
+    logs?: any[];
+    lastCycle?: number;
+    progress?: number;
+    result?: unknown;
+  };
+}
+
+/**
+ * EditorFull: 节点 (编辑器扩展版 - 包含所有前端实现字段)
+ */
+export interface EditorFullNode extends Omit<FullNode, 'data'> {
+  data: EditorFullNodeData;
+  // 前端实现字段
+  className?: string;  // CSS 类名
+  width?: number;  // 节点宽度
+  height?: number;  // 节点高度
+  selected?: boolean;  // 选中状态
+  positionAbsolute?: Position;  // 绝对位置（计算值）
+  dragging?: boolean;  // 拖拽状态
+}
+
+/**
+ * EditorFull: 边 (编辑器扩展版 - 包含所有前端实现字段)
+ */
+export interface EditorFullEdge extends FullEdge {
+  selected?: boolean;  // 选中状态
+  className?: string;  // CSS 类名
+  animated?: boolean;  // 动画效果
+}
+
+/**
+ * EditorFull: 工作流 (编辑器扩展版)
+ */
+export interface EditorFullFlow extends Omit<FullFlow, 'nodes' | 'edges'> {
+  nodes: EditorFullNode[];
+  edges: EditorFullEdge[];
 }
 
 // ============================================================================
