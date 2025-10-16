@@ -14,6 +14,8 @@ export interface LintIssue {
   elementId?: string;
   elementType?: "node" | "edge";
   code: string;
+  fieldId?: string; // 字段级别错误：指示具体是哪个输入或输出字段
+  fieldType?: "input" | "output"; // 字段类型
 }
 
 // TFL 节点定义
@@ -286,16 +288,35 @@ export class TFLLint {
     const issues: LintIssue[] = [];
 
     // 检查必需输入
-    const nodeInputIds = (node.inputs || []).map(input => input.id);
+    const nodeInputsMap = new Map((node.inputs || []).map(input => [input.id, input]));
     definition.requiredInputs.forEach(requiredInput => {
-      if (!nodeInputIds.includes(requiredInput)) {
+      const input = nodeInputsMap.get(requiredInput);
+      
+      if (!input) {
+        // 字段不存在
         issues.push({
           severity: "error",
-          message: `Node ${node.id} is missing required input: ${requiredInput}`,
+          message: `Missing required input: ${requiredInput}`,
           elementId: node.id,
           elementType: "node",
-          code: "missing-required-input"
+          code: "missing-required-input",
+          fieldId: requiredInput,
+          fieldType: "input"
         });
+      } else {
+        // 字段存在但值为空
+        const isEmpty = this.isEmptyValue(input.value);
+        if (isEmpty) {
+          issues.push({
+            severity: "error",
+            message: `Required input "${requiredInput}" has no value`,
+            elementId: node.id,
+            elementType: "node",
+            code: "required-input-empty",
+            fieldId: requiredInput,
+            fieldType: "input"
+          });
+        }
       }
     });
 
@@ -549,6 +570,40 @@ export class TFLLint {
     });
 
     return issues;
+  }
+
+  /**
+   * 检查值是否为空
+   */
+  private isEmptyValue(value: unknown): boolean {
+    // null 或 undefined
+    if (value === null || value === undefined) {
+      return true;
+    }
+    
+    // 空字符串
+    if (typeof value === 'string' && value.trim() === '') {
+      return true;
+    }
+    
+    // 空数组
+    if (Array.isArray(value) && value.length === 0) {
+      return true;
+    }
+    
+    // 空对象（但排除有意义的对象如 Date）
+    if (typeof value === 'object' && !Array.isArray(value)) {
+      // 排除 Date 等特殊对象
+      if (value instanceof Date || value instanceof RegExp) {
+        return false;
+      }
+      // 空对象 {}
+      if (Object.keys(value).length === 0) {
+        return true;
+      }
+    }
+    
+    return false;
   }
 
   /**

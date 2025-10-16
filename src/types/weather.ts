@@ -504,6 +504,7 @@ export interface EditorFullNodeData extends Omit<FullNodeData, 'inputs' | 'outpu
   onRunOnce?: () => void;  // 单次运行回调
   isLocked?: boolean;  // 锁定状态
   icon?: unknown;  // React.ReactNode - 节点图标
+  lintErrors?: any[];  // Lint 错误列表
   
   // 执行状态信息
   executionInfo?: {
