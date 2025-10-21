@@ -1,5 +1,28 @@
 export * from './types';
-import { FlowData, Node, Edge, NodeType, NodeDefinition, Position } from './types';
+import { 
+  EssentialNode, 
+  EssentialEdge, 
+  EssentialFlow, 
+  NodeType, 
+  Position,
+  EssentialInput,
+  EssentialOutput
+} from './types/weather';
+
+// Linter 专用类型
+export interface NodeDefinition {
+  type: NodeType;
+  description: string;
+  category: 'input' | 'compute' | 'trade' | 'output';
+  requiredInputs: string[];
+  optionalInputs: string[];
+  outputs: string[];
+}
+
+export interface FlowData {
+  nodes: EssentialNode[];
+  edges: EssentialEdge[];
+}
 
 export interface LintOptions {
   strict?: boolean;
@@ -185,7 +208,7 @@ export class TFLLint {
   /**
    * 检查节点
    */
-  private lintNodes(nodes: Node[]): LintIssue[] {
+  private lintNodes(nodes: EssentialNode[]): LintIssue[] {
     const issues: LintIssue[] = [];
     const nodeIds = new Set<string>();
 
@@ -284,11 +307,11 @@ export class TFLLint {
   /**
    * 检查节点的输入输出
    */
-  private lintNodeInputsOutputs(node: Node, definition: NodeDefinition): LintIssue[] {
+  private lintNodeInputsOutputs(node: EssentialNode, definition: NodeDefinition): LintIssue[] {
     const issues: LintIssue[] = [];
 
     // 检查必需输入
-    const nodeInputsMap = new Map((node.inputs || []).map(input => [input.id, input]));
+    const nodeInputsMap = new Map((node.data.inputs || []).map(input => [input.id, input]));
     definition.requiredInputs.forEach(requiredInput => {
       const input = nodeInputsMap.get(requiredInput);
       
@@ -321,8 +344,8 @@ export class TFLLint {
     });
 
     // 检查输入格式
-    if (node.inputs) {
-      node.inputs.forEach((input, index) => {
+    if (node.data.inputs) {
+      node.data.inputs.forEach((input, index) => {
         if (!input.id) {
           issues.push({
             severity: "error",
@@ -348,8 +371,8 @@ export class TFLLint {
     }
 
     // 检查输出格式
-    if (node.outputs) {
-      node.outputs.forEach((output, index) => {
+    if (node.data.outputs) {
+      node.data.outputs.forEach((output, index) => {
         if (!output.id) {
           issues.push({
             severity: "error",
@@ -360,7 +383,8 @@ export class TFLLint {
           });
         }
 
-        if (typeof output.isDeleted !== 'boolean') {
+        // isDeleted 是可选字段
+        if (output.isDeleted !== undefined && typeof output.isDeleted !== 'boolean') {
           issues.push({
             severity: "error",
             message: `Node ${node.id} output ${output.id} must have boolean isDeleted field`,
@@ -389,7 +413,7 @@ export class TFLLint {
   /**
    * 检查边
    */
-  private lintEdges(edges: Edge[], nodes: Node[]): LintIssue[] {
+  private lintEdges(edges: EssentialEdge[], nodes: EssentialNode[]): LintIssue[] {
     const issues: LintIssue[] = [];
     const nodeMap = new Map(nodes.map(node => [node.id, node]));
 
@@ -454,7 +478,7 @@ export class TFLLint {
       // 检查源输出端口存在性
       if (edge.source && edge.sourceHandle && nodeMap.has(edge.source)) {
         const sourceNode = nodeMap.get(edge.source)!;
-        const sourceOutputs = (sourceNode.outputs || []).map(output => output.id);
+        const sourceOutputs = (sourceNode.data.outputs || []).map(output => output.id);
         // Strip -handle suffix for validation (frontend uses field_name-handle format)
         const handleToCheck = edge.sourceHandle.endsWith('-handle')
           ? edge.sourceHandle.slice(0, -7)
@@ -472,7 +496,7 @@ export class TFLLint {
       // 检查目标输入端口存在性
       if (edge.target && edge.targetHandle && nodeMap.has(edge.target)) {
         const targetNode = nodeMap.get(edge.target)!;
-        const targetInputs = (targetNode.inputs || []).map(input => input.id);
+        const targetInputs = (targetNode.data.inputs || []).map(input => input.id);
         // Strip -handle suffix for validation (frontend uses field_name-handle format)
         const handleToCheck = edge.targetHandle.endsWith('-handle')
           ? edge.targetHandle.slice(0, -7)
