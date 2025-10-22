@@ -133,6 +133,7 @@ export interface EssentialInput {
   value?: unknown;  // 可选，可以是任何类型的值
   min?: number;  // 用于数字类型验证
   max?: number;  // 用于数字类型验证
+  skipUserValueRestore?: boolean;  // Agent 标记：此值由 Agent 生成，不应保留为 "User Selected"
 }
 
 /**
