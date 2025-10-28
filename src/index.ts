@@ -74,7 +74,7 @@ const NODE_DEFINITIONS: Record<NodeType, NodeDefinition> = {
     category: 'input',
     requiredInputs: ['accounts'],
     optionalInputs: ['keywords'],
-    outputs: ['latest tweets']
+    outputs: ['latest_tweets']  // 🔥 修复：去掉空格
   },
 
   // Compute Nodes
@@ -92,7 +92,7 @@ const NODE_DEFINITIONS: Record<NodeType, NodeDefinition> = {
     category: 'compute',
     requiredInputs: ['python_code'],
     optionalInputs: ['input_data'],
-    outputs: ['output_data', 'debug_output']
+    outputs: ['output_data', 'stdout_output', 'stderr_output', 'debug_output']  // 🔥 添加完整输出
   },
 
   // Trade Nodes
@@ -144,14 +144,15 @@ const NODE_DEFINITIONS: Record<NodeType, NodeDefinition> = {
     category: 'output',
     requiredInputs: ['account_to_send', 'messages'],
     optionalInputs: [],
-    outputs: []
+    outputs: ['status_output_handle', 'error_handle']  // 🔥 添加输出定义
   }
 };
 
 export class TFLLint {
-  private options: LintOptions;
+  private options?: LintOptions;
+  private edges: EssentialEdge[] = [];
 
-  constructor(options: LintOptions = {}) {
+  constructor(options?: LintOptions) {
     this.options = options;
   }
 
@@ -161,8 +162,11 @@ export class TFLLint {
   lintFlow(data: FlowData): LintIssue[] {
     const issues: LintIssue[] = [];
 
-    // 验证基本结构
-    if (!data) {
+    // 保存 edges 引用供其他方法使用
+    this.edges = data.edges || [];
+
+    // 检查基本结构
+    if (!data.nodes || !Array.isArray(data.nodes)) {
       issues.push({
         severity: "error",
         message: "Flow data is null or undefined",
@@ -281,6 +285,9 @@ export class TFLLint {
         issues.push(...this.lintNodeInputsOutputs(node, NODE_DEFINITIONS[node.type as NodeType]));
       }
 
+      // 检查节点版本
+      issues.push(...this.lintNodeVersion(node));
+
       // 检查位置重叠 - 在 node 模式下跳过位置重叠检查
       if (node.position && this.options?.mode !== 'node') {
         nodes.forEach((otherNode) => {
@@ -327,12 +334,15 @@ export class TFLLint {
           fieldType: "input"
         });
       } else {
-        // 字段存在但值为空
+        // 【连线优先逻辑】检查是否被连线
+        const isConnected = this.isInputConnected(node.id, requiredInput);
         const isEmpty = this.isEmptyValue(input.value);
-        if (isEmpty) {
+        
+        // 如果既没有值，也没有被连线，报错
+        if (isEmpty && !isConnected) {
           issues.push({
             severity: "error",
-            message: `Required input "${requiredInput}" has no value`,
+            message: `Required input "${requiredInput}" has no value and is not connected`,
             elementId: node.id,
             elementType: "node",
             code: "required-input-empty",
@@ -597,12 +607,53 @@ export class TFLLint {
   }
 
   /**
+   * 检查输入是否被连接
+   */
+  private isInputConnected(nodeId: string, inputId: string): boolean {
+    if (!this.edges || this.edges.length === 0) {
+      return false;
+    }
+
+    // 检查是否有边连接到这个输入
+    // targetHandle 格式可能是 "inputId" 或 "nodeId__inputId"
+    return this.edges.some(edge => {
+      if (edge.target !== nodeId) {
+        return false;
+      }
+      
+      // 检查 targetHandle
+      if (!edge.targetHandle) {
+        return false;
+      }
+      
+      // 可能的格式：
+      // 1. "inputId"
+      // 2. "nodeId__inputId"
+      if (edge.targetHandle === inputId) {
+        return true;
+      }
+      
+      const parts = edge.targetHandle.split('__');
+      if (parts.length > 1 && parts[1] === inputId) {
+        return true;
+      }
+      
+      return false;
+    });
+  }
+
+  /**
    * 检查值是否为空
    */
   private isEmptyValue(value: unknown): boolean {
     // null 或 undefined
     if (value === null || value === undefined) {
       return true;
+    }
+    
+    // "RECEIVING INPUT" 不算空值（前端连接状态的占位符）
+    if (value === 'RECEIVING INPUT' || value === 'RECEIVING_INPUT') {
+      return false;
     }
     
     // 空字符串
@@ -643,6 +694,84 @@ export class TFLLint {
       pos1.y < pos2.y + NODE_HEIGHT &&
       pos1.y + NODE_HEIGHT > pos2.y
     );
+  }
+
+  /**
+   * 检查节点版本
+   */
+  private lintNodeVersion(node: EssentialNode): LintIssue[] {
+    const issues: LintIssue[] = [];
+
+    // 获取版本信息
+    const version = (node as any).version || (node.data as any)?.version;
+
+    // 如果没有版本信息，给出信息提示
+    if (!version) {
+      issues.push({
+        severity: "warning",
+        message: "No version specified, using default: 'latest'",
+        elementId: node.id,
+        elementType: "node",
+        code: "missing-node-version"
+      });
+      return issues;
+    }
+
+    // 验证版本语法
+    const versionValidation = this.validateVersionSyntax(version);
+    if (!versionValidation.isValid) {
+      issues.push({
+        severity: "error",
+        message: versionValidation.error || `Invalid version specification: '${version}'`,
+        elementId: node.id,
+        elementType: "node",
+        code: "invalid-version-syntax"
+      });
+      return issues;
+    }
+
+    // 检查预发布版本（警告）
+    if (version.includes('-') && !version.startsWith('latest')) {
+      issues.push({
+        severity: "warning",
+        message: `Using prerelease version: '${version}'. Consider using a stable version for production.`,
+        elementId: node.id,
+        elementType: "node",
+        code: "prerelease-version"
+      });
+    }
+
+    return issues;
+  }
+
+  /**
+   * 验证版本语法
+   */
+  private validateVersionSyntax(version: string): { isValid: boolean; error?: string } {
+    if (!version || typeof version !== 'string') {
+      return { isValid: false, error: "Version specification is required" };
+    }
+
+    // 定义有效的版本模式
+    const patterns = {
+      exact: /^\d+\.\d+\.\d+(-[a-zA-Z0-9.-]+)?(\+[a-zA-Z0-9.-]+)?$/,  // 1.2.3, 1.2.3-beta.1
+      latest: /^latest(-[a-zA-Z]+)?$/,  // latest, latest-beta
+      caret: /^\^\d+\.\d+\.\d+$/,  // ^1.2.0
+      tilde: /^~\d+\.\d+\.\d+$/,  // ~1.2.0
+      comparison: /^(>=?|<=?|>|<)\d+\.\d+\.\d+$/,  // >=1.0.0, <2.0.0
+    };
+
+    // 检查是否匹配任何有效模式
+    for (const pattern of Object.values(patterns)) {
+      if (pattern.test(version)) {
+        return { isValid: true };
+      }
+    }
+
+    return {
+      isValid: false,
+      error: `Invalid version specification: '${version}'. Expected format: '1.2.3', 'latest', '^1.2.0', '~1.2.0', etc.`
+    };
   }
 
   /**
