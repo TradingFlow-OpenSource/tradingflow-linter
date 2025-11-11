@@ -1,8 +1,7 @@
 {
   "name": "@tradingflow/lint",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "TradingFlow Language Lint",
-  "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "files": [
