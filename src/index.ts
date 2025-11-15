@@ -1,19 +1,19 @@
-export * from './types';
-import { 
-  EssentialNode, 
-  EssentialEdge, 
-  EssentialFlow, 
-  NodeType, 
+export * from "./types";
+import {
+  EssentialNode,
+  EssentialEdge,
+  EssentialFlow,
+  NodeType,
   Position,
   EssentialInput,
-  EssentialOutput
-} from './types/weather';
+  EssentialOutput,
+} from "./types/weather";
 
 // Linter 专用类型
 export interface NodeDefinition {
   type: NodeType;
   description: string;
-  category: 'input' | 'compute' | 'trade' | 'output';
+  category: "input" | "compute" | "trade" | "output";
   requiredInputs: string[];
   optionalInputs: string[];
   outputs: string[];
@@ -26,7 +26,7 @@ export interface FlowData {
 
 export interface LintOptions {
   strict?: boolean;
-  mode?: 'flow' | 'node'; // 执行模式：flow = 完整流程校验，node = 单节点校验
+  mode?: "flow" | "node"; // 执行模式：flow = 完整流程校验，node = 单节点校验
 }
 
 export type LintSeverity = "error" | "warning";
@@ -44,108 +44,114 @@ export interface LintIssue {
 // TFL 节点定义
 const NODE_DEFINITIONS: Record<NodeType, NodeDefinition> = {
   // Input Nodes
-  'binance_price_node': {
-    type: 'binance_price_node',
-    description: 'Get Binance market data for specified trading pairs',
-    category: 'input',
-    requiredInputs: ['symbol', 'interval'],
-    optionalInputs: ['limit'],
-    outputs: ['current_price', 'kline_data']
+  binance_price_node: {
+    type: "binance_price_node",
+    description: "Get Binance market data for specified trading pairs",
+    category: "input",
+    requiredInputs: ["symbol", "interval"],
+    optionalInputs: ["limit"],
+    outputs: ["data"], //
   },
-  'dataset_input_node': {
-    type: 'dataset_input_node',
-    description: 'Load dataset from user\'s Google Sheets',
-    category: 'input',
-    requiredInputs: ['doc_link'],
+  dataset_input_node: {
+    type: "dataset_input_node",
+    description: "Load dataset from user's Google Sheets",
+    category: "input",
+    requiredInputs: ["doc_link"],
     optionalInputs: [],
-    outputs: ['data']
+    outputs: ["data"],
   },
-  'rss_listener_node': {
-    type: 'rss_listener_node',
-    description: 'Get information from RSS feeds',
-    category: 'input',
-    requiredInputs: ['route'],
-    optionalInputs: ['parameters', 'keywords'],
-    outputs: ['feeds']
-  },
-  'x_listener_node': {
-    type: 'x_listener_node',
-    description: 'Monitor X (formerly Twitter) accounts',
-    category: 'input',
-    requiredInputs: ['accounts'],
-    optionalInputs: ['keywords'],
-    outputs: ['latest_tweets']  // 🔥 修复：去掉空格
+  x_listener_node: {
+    type: "x_listener_node",
+    description: "Monitor X (formerly Twitter) accounts",
+    category: "input",
+    requiredInputs: ["accounts"],
+    optionalInputs: ["keywords"],
+    outputs: ["latest_tweets"],
   },
 
   // Compute Nodes
-  'ai_model_node': {
-    type: 'ai_model_node',
-    description: 'Run AI models for analysis and generation',
-    category: 'compute',
-    requiredInputs: ['model', 'prompt'],
-    optionalInputs: ['parameters'],
-    outputs: ['ai_response']
+  ai_model_node: {
+    type: "ai_model_node",
+    description: "Run AI models for analysis and generation",
+    category: "compute",
+    requiredInputs: ["model", "prompt"],
+    optionalInputs: ["parameters"],
+    outputs: ["ai_response"],
   },
-  'code_node': {
-    type: 'code_node',
-    description: 'Execute custom Python code',
-    category: 'compute',
-    requiredInputs: ['python_code'],
-    optionalInputs: ['input_data'],
-    outputs: ['output_data', 'stdout_output', 'stderr_output', 'debug_output']  // 🔥 添加完整输出
+  code_node: {
+    type: "code_node",
+    description: "Execute custom Python code",
+    category: "compute",
+    requiredInputs: ["python_code"],
+    optionalInputs: ["input_data"],
+    outputs: ["output_data"], // 🔥 修复：debug_output 已移除
   },
 
   // Trade Nodes
-  'swap_node': {
-    type: 'swap_node',
-    description: 'Process swap operations and execute swaps',
-    category: 'trade',
-    requiredInputs: ['from_token', 'to_token', 'chain', 'vault_address'],
-    optionalInputs: ['amount_in_percentage', 'amount_in_human_readble', 'slippery'],
-    outputs: ['trade_receipt']
+  swap_node: {
+    type: "swap_node",
+    description: "Process swap operations and execute swaps",
+    category: "trade",
+    requiredInputs: ["from_token", "to_token", "chain", "vault_address"],
+    optionalInputs: [
+      "amount_in_percentage",
+      "amount_in_human_readble",
+      "slippery",
+    ],
+    outputs: ["trade_receipt"],
   },
-  'buy_node': {
-    type: 'buy_node',
-    description: 'Process buy signals and execute buy operations',
-    category: 'trade',
-    requiredInputs: ['buy_token', 'base_token', 'vault_address', 'chain'],
-    optionalInputs: ['order_type', 'limited_price', 'amount_in_percentage', 'amount_in_human_readble'],
-    outputs: ['trade_receipt']
+  buy_node: {
+    type: "buy_node",
+    description: "Process buy signals and execute buy operations",
+    category: "trade",
+    requiredInputs: ["buy_token", "base_token", "vault_address", "chain"],
+    optionalInputs: [
+      "order_type",
+      "limited_price",
+      "amount_in_percentage",
+      "amount_in_human_readble",
+    ],
+    outputs: ["trade_receipt"],
   },
-  'sell_node': {
-    type: 'sell_node',
-    description: 'Process sell signals and execute sell operations',
-    category: 'trade',
-    requiredInputs: ['sell_token', 'base_token', 'vault_address', 'chain'],
-    optionalInputs: ['order_type', 'limited_price', 'amount_in_percentage', 'amount_in_human_readble'],
-    outputs: ['trade_receipt']
+  sell_node: {
+    type: "sell_node",
+    description: "Process sell signals and execute sell operations",
+    category: "trade",
+    requiredInputs: ["sell_token", "base_token", "vault_address", "chain"],
+    optionalInputs: [
+      "order_type",
+      "limited_price",
+      "amount_in_percentage",
+      "amount_in_human_readble",
+    ],
+    outputs: ["trade_receipt"],
   },
-  'vault_node': {
-    type: 'vault_node',
-    description: 'Display user\'s vault information',
-    category: 'trade',
-    requiredInputs: ['vault_address', 'chain'],
+  vault_node: {
+    type: "vault_node",
+    description: "Display user's vault information",
+    category: "trade",
+    requiredInputs: ["vault_address", "chain"],
     optionalInputs: [],
-    outputs: ['vault_balance', 'vault_address', 'chain']
+    outputs: ["vault"], // 🔥 修复：统一为单一 vault 输出
   },
 
   // Output Nodes
-  'dataset_output_node': {
-    type: 'dataset_output_node',
-    description: 'Save data to user\'s Google Sheets',
-    category: 'output',
-    requiredInputs: ['doc_link', 'data'],
+  dataset_output_node: {
+    type: "dataset_output_node",
+    description: "Save data to user's Google Sheets",
+    category: "output",
+    requiredInputs: ["doc_link", "data"],
     optionalInputs: [],
-    outputs: []
+    outputs: [],
   },
-  'telegram_sender_node': {
-    type: 'telegram_sender_node',
-    description: 'Send messages to Telegram',
-    category: 'output',
-    requiredInputs: ['account_to_send', 'messages'],
+  telegram_sender_node: {
+    type: "telegram_sender_node",
+    description: "Send messages to Telegram",
+    category: "output",
+    requiredInputs: ["account_to_send", "messages"],
     optionalInputs: [],
-    outputs: ['status_output_handle', 'error_handle']  // 🔥 添加输出定义
-  }
+    outputs: ["result"], // 🔥 统一为单一 result 输出
+  },
 };
 
 export class TFLLint {
@@ -170,7 +176,7 @@ export class TFLLint {
       issues.push({
         severity: "error",
         message: "Flow data is null or undefined",
-        code: "invalid-flow-data"
+        code: "invalid-flow-data",
       });
       return issues;
     }
@@ -179,7 +185,7 @@ export class TFLLint {
       issues.push({
         severity: "error",
         message: "Flow data must have a nodes array",
-        code: "missing-nodes-array"
+        code: "missing-nodes-array",
       });
       return issues;
     }
@@ -188,7 +194,7 @@ export class TFLLint {
       issues.push({
         severity: "error",
         message: "Flow data must have an edges array",
-        code: "missing-edges-array"
+        code: "missing-edges-array",
       });
       return issues;
     }
@@ -197,12 +203,12 @@ export class TFLLint {
     issues.push(...this.lintNodes(data.nodes));
 
     // 检查边 - 在 node 模式下跳过边有效性检查
-    if (this.options?.mode !== 'node') {
+    if (this.options?.mode !== "node") {
       issues.push(...this.lintEdges(data.edges, data.nodes));
     }
 
     // 检查流程完整性 - 在 node 模式下跳过流程完整性检查
-    if (this.options?.mode !== 'node') {
+    if (this.options?.mode !== "node") {
       issues.push(...this.lintFlowIntegrity(data));
     }
 
@@ -223,7 +229,7 @@ export class TFLLint {
           severity: "error",
           message: `Node at index ${index} is missing required field: id`,
           elementType: "node",
-          code: "missing-node-id"
+          code: "missing-node-id",
         });
         return;
       }
@@ -235,7 +241,7 @@ export class TFLLint {
           message: `Duplicate node ID: ${node.id}`,
           elementId: node.id,
           elementType: "node",
-          code: "duplicate-node-id"
+          code: "duplicate-node-id",
         });
       }
       nodeIds.add(node.id);
@@ -247,7 +253,7 @@ export class TFLLint {
           message: "Node is missing required field: type",
           elementId: node.id,
           elementType: "node",
-          code: "missing-node-type"
+          code: "missing-node-type",
         });
       } else if (!NODE_DEFINITIONS[node.type as NodeType]) {
         issues.push({
@@ -255,7 +261,7 @@ export class TFLLint {
           message: `Unknown node type: ${node.type}`,
           elementId: node.id,
           elementType: "node",
-          code: "invalid-node-type"
+          code: "invalid-node-type",
         });
       }
 
@@ -266,30 +272,38 @@ export class TFLLint {
           message: "Node is missing required field: position",
           elementId: node.id,
           elementType: "node",
-          code: "missing-node-position"
+          code: "missing-node-position",
         });
       } else {
-        if (typeof node.position.x !== 'number' || typeof node.position.y !== 'number') {
+        if (
+          typeof node.position.x !== "number" ||
+          typeof node.position.y !== "number"
+        ) {
           issues.push({
             severity: "error",
             message: "Node position must have numeric x and y coordinates",
             elementId: node.id,
             elementType: "node",
-            code: "invalid-node-position"
+            code: "invalid-node-position",
           });
         }
       }
 
       // 检查节点特定的输入输出
       if (node.type && NODE_DEFINITIONS[node.type as NodeType]) {
-        issues.push(...this.lintNodeInputsOutputs(node, NODE_DEFINITIONS[node.type as NodeType]));
+        issues.push(
+          ...this.lintNodeInputsOutputs(
+            node,
+            NODE_DEFINITIONS[node.type as NodeType]
+          )
+        );
       }
 
       // 检查节点版本
       issues.push(...this.lintNodeVersion(node));
 
       // 检查位置重叠 - 在 node 模式下跳过位置重叠检查
-      if (node.position && this.options?.mode !== 'node') {
+      if (node.position && this.options?.mode !== "node") {
         nodes.forEach((otherNode) => {
           if (
             node.id !== otherNode.id &&
@@ -301,7 +315,7 @@ export class TFLLint {
               message: `Node overlaps with node ${otherNode.id}`,
               elementId: node.id,
               elementType: "node",
-              code: "node-position-overlap"
+              code: "node-position-overlap",
             });
           }
         });
@@ -314,14 +328,19 @@ export class TFLLint {
   /**
    * 检查节点的输入输出
    */
-  private lintNodeInputsOutputs(node: EssentialNode, definition: NodeDefinition): LintIssue[] {
+  private lintNodeInputsOutputs(
+    node: EssentialNode,
+    definition: NodeDefinition
+  ): LintIssue[] {
     const issues: LintIssue[] = [];
 
     // 检查必需输入
-    const nodeInputsMap = new Map((node.data.inputs || []).map(input => [input.id, input]));
-    definition.requiredInputs.forEach(requiredInput => {
+    const nodeInputsMap = new Map(
+      (node.data.inputs || []).map((input) => [input.id, input])
+    );
+    definition.requiredInputs.forEach((requiredInput) => {
       const input = nodeInputsMap.get(requiredInput);
-      
+
       if (!input) {
         // 字段不存在
         issues.push({
@@ -331,13 +350,13 @@ export class TFLLint {
           elementType: "node",
           code: "missing-required-input",
           fieldId: requiredInput,
-          fieldType: "input"
+          fieldType: "input",
         });
       } else {
         // 【连线优先逻辑】检查是否被连线
         const isConnected = this.isInputConnected(node.id, requiredInput);
         const isEmpty = this.isEmptyValue(input.value);
-        
+
         // 如果既没有值，也没有被连线，报错
         if (isEmpty && !isConnected) {
           issues.push({
@@ -347,7 +366,7 @@ export class TFLLint {
             elementType: "node",
             code: "required-input-empty",
             fieldId: requiredInput,
-            fieldType: "input"
+            fieldType: "input",
           });
         }
       }
@@ -362,19 +381,22 @@ export class TFLLint {
             message: `Node ${node.id} input at index ${index} is missing id`,
             elementId: node.id,
             elementType: "node",
-            code: "missing-input-id"
+            code: "missing-input-id",
           });
         }
 
         // 检查是否是有效的输入
-        const allValidInputs = [...definition.requiredInputs, ...definition.optionalInputs];
+        const allValidInputs = [
+          ...definition.requiredInputs,
+          ...definition.optionalInputs,
+        ];
         if (input.id && !allValidInputs.includes(input.id)) {
           issues.push({
             severity: "warning",
             message: `Node ${node.id} has unknown input: ${input.id}`,
             elementId: node.id,
             elementType: "node",
-            code: "unknown-input"
+            code: "unknown-input",
           });
         }
       });
@@ -389,18 +411,21 @@ export class TFLLint {
             message: `Node ${node.id} output at index ${index} is missing id`,
             elementId: node.id,
             elementType: "node",
-            code: "missing-output-id"
+            code: "missing-output-id",
           });
         }
 
         // isDeleted 是可选字段
-        if (output.isDeleted !== undefined && typeof output.isDeleted !== 'boolean') {
+        if (
+          output.isDeleted !== undefined &&
+          typeof output.isDeleted !== "boolean"
+        ) {
           issues.push({
             severity: "error",
             message: `Node ${node.id} output ${output.id} must have boolean isDeleted field`,
             elementId: node.id,
             elementType: "node",
-            code: "invalid-output-isdeleted"
+            code: "invalid-output-isdeleted",
           });
         }
 
@@ -411,7 +436,7 @@ export class TFLLint {
             message: `Node ${node.id} has unknown output: ${output.id}`,
             elementId: node.id,
             elementType: "node",
-            code: "unknown-output"
+            code: "unknown-output",
           });
         }
       });
@@ -423,9 +448,12 @@ export class TFLLint {
   /**
    * 检查边
    */
-  private lintEdges(edges: EssentialEdge[], nodes: EssentialNode[]): LintIssue[] {
+  private lintEdges(
+    edges: EssentialEdge[],
+    nodes: EssentialNode[]
+  ): LintIssue[] {
     const issues: LintIssue[] = [];
-    const nodeMap = new Map(nodes.map(node => [node.id, node]));
+    const nodeMap = new Map(nodes.map((node) => [node.id, node]));
 
     edges.forEach((edge, index) => {
       // 检查必需字段
@@ -434,7 +462,7 @@ export class TFLLint {
           severity: "error",
           message: `Edge at index ${index} is missing required field: source`,
           elementType: "edge",
-          code: "missing-edge-source"
+          code: "missing-edge-source",
         });
       }
 
@@ -443,7 +471,7 @@ export class TFLLint {
           severity: "error",
           message: `Edge at index ${index} is missing required field: sourceHandle`,
           elementType: "edge",
-          code: "missing-edge-sourcehandle"
+          code: "missing-edge-sourcehandle",
         });
       }
 
@@ -452,7 +480,7 @@ export class TFLLint {
           severity: "error",
           message: `Edge at index ${index} is missing required field: target`,
           elementType: "edge",
-          code: "missing-edge-target"
+          code: "missing-edge-target",
         });
       }
 
@@ -461,7 +489,7 @@ export class TFLLint {
           severity: "error",
           message: `Edge at index ${index} is missing required field: targetHandle`,
           elementType: "edge",
-          code: "missing-edge-targethandle"
+          code: "missing-edge-targethandle",
         });
       }
 
@@ -471,7 +499,7 @@ export class TFLLint {
           severity: "error",
           message: `Edge references non-existent source node: ${edge.source}`,
           elementType: "edge",
-          code: "invalid-edge-source-node"
+          code: "invalid-edge-source-node",
         });
       }
 
@@ -481,16 +509,18 @@ export class TFLLint {
           severity: "error",
           message: `Edge references non-existent target node: ${edge.target}`,
           elementType: "edge",
-          code: "invalid-edge-target-node"
+          code: "invalid-edge-target-node",
         });
       }
 
       // 检查源输出端口存在性
       if (edge.source && edge.sourceHandle && nodeMap.has(edge.source)) {
         const sourceNode = nodeMap.get(edge.source)!;
-        const sourceOutputs = (sourceNode.data.outputs || []).map(output => output.id);
+        const sourceOutputs = (sourceNode.data.outputs || []).map(
+          (output) => output.id
+        );
         // Strip -handle suffix for validation (frontend uses field_name-handle format)
-        const handleToCheck = edge.sourceHandle.endsWith('-handle')
+        const handleToCheck = edge.sourceHandle.endsWith("-handle")
           ? edge.sourceHandle.slice(0, -7)
           : edge.sourceHandle;
         if (!sourceOutputs.includes(handleToCheck)) {
@@ -498,7 +528,7 @@ export class TFLLint {
             severity: "error",
             message: `Edge references non-existent output handle ${edge.sourceHandle} on node ${edge.source}`,
             elementType: "edge",
-            code: "invalid-edge-source-handle"
+            code: "invalid-edge-source-handle",
           });
         }
       }
@@ -506,9 +536,11 @@ export class TFLLint {
       // 检查目标输入端口存在性
       if (edge.target && edge.targetHandle && nodeMap.has(edge.target)) {
         const targetNode = nodeMap.get(edge.target)!;
-        const targetInputs = (targetNode.data.inputs || []).map(input => input.id);
+        const targetInputs = (targetNode.data.inputs || []).map(
+          (input) => input.id
+        );
         // Strip -handle suffix for validation (frontend uses field_name-handle format)
-        const handleToCheck = edge.targetHandle.endsWith('-handle')
+        const handleToCheck = edge.targetHandle.endsWith("-handle")
           ? edge.targetHandle.slice(0, -7)
           : edge.targetHandle;
         if (!targetInputs.includes(handleToCheck)) {
@@ -516,7 +548,7 @@ export class TFLLint {
             severity: "error",
             message: `Edge references non-existent input handle ${edge.targetHandle} on node ${edge.target}`,
             elementType: "edge",
-            code: "invalid-edge-target-handle"
+            code: "invalid-edge-target-handle",
           });
         }
       }
@@ -533,19 +565,19 @@ export class TFLLint {
 
     // 检查是否有孤立节点（没有连接的节点）
     const connectedNodes = new Set<string>();
-    data.edges.forEach(edge => {
+    data.edges.forEach((edge) => {
       connectedNodes.add(edge.source);
       connectedNodes.add(edge.target);
     });
 
-    data.nodes.forEach(node => {
+    data.nodes.forEach((node) => {
       if (!connectedNodes.has(node.id) && data.nodes.length > 1) {
         issues.push({
           severity: "warning",
           message: `Node ${node.id} is isolated (not connected to any other nodes)`,
           elementId: node.id,
           elementType: "node",
-          code: "isolated-node"
+          code: "isolated-node",
         });
       }
     });
@@ -571,8 +603,8 @@ export class TFLLint {
         const cycle = path.slice(cycleStart).concat(nodeId);
         issues.push({
           severity: "error",
-          message: `Circular dependency detected: ${cycle.join(' -> ')}`,
-          code: "circular-dependency"
+          message: `Circular dependency detected: ${cycle.join(" -> ")}`,
+          code: "circular-dependency",
         });
         return true;
       }
@@ -585,7 +617,7 @@ export class TFLLint {
       recursionStack.add(nodeId);
 
       // 查找所有从当前节点出发的边
-      const outgoingEdges = data.edges.filter(edge => edge.source === nodeId);
+      const outgoingEdges = data.edges.filter((edge) => edge.source === nodeId);
       for (const edge of outgoingEdges) {
         if (dfs(edge.target, [...path, nodeId])) {
           return true;
@@ -597,7 +629,7 @@ export class TFLLint {
     };
 
     // 对每个节点进行 DFS
-    data.nodes.forEach(node => {
+    data.nodes.forEach((node) => {
       if (!visited.has(node.id)) {
         dfs(node.id, []);
       }
@@ -616,28 +648,28 @@ export class TFLLint {
 
     // 检查是否有边连接到这个输入
     // targetHandle 格式可能是 "inputId" 或 "nodeId__inputId"
-    return this.edges.some(edge => {
+    return this.edges.some((edge) => {
       if (edge.target !== nodeId) {
         return false;
       }
-      
+
       // 检查 targetHandle
       if (!edge.targetHandle) {
         return false;
       }
-      
+
       // 可能的格式：
       // 1. "inputId"
       // 2. "nodeId__inputId"
       if (edge.targetHandle === inputId) {
         return true;
       }
-      
-      const parts = edge.targetHandle.split('__');
+
+      const parts = edge.targetHandle.split("__");
       if (parts.length > 1 && parts[1] === inputId) {
         return true;
       }
-      
+
       return false;
     });
   }
@@ -650,24 +682,24 @@ export class TFLLint {
     if (value === null || value === undefined) {
       return true;
     }
-    
+
     // "RECEIVING INPUT" 不算空值（前端连接状态的占位符）
-    if (value === 'RECEIVING INPUT' || value === 'RECEIVING_INPUT') {
+    if (value === "RECEIVING INPUT" || value === "RECEIVING_INPUT") {
       return false;
     }
-    
+
     // 空字符串
-    if (typeof value === 'string' && value.trim() === '') {
+    if (typeof value === "string" && value.trim() === "") {
       return true;
     }
-    
+
     // 空数组
     if (Array.isArray(value) && value.length === 0) {
       return true;
     }
-    
+
     // 空对象（但排除有意义的对象如 Date）
-    if (typeof value === 'object' && !Array.isArray(value)) {
+    if (typeof value === "object" && !Array.isArray(value)) {
       // 排除 Date 等特殊对象
       if (value instanceof Date || value instanceof RegExp) {
         return false;
@@ -677,7 +709,7 @@ export class TFLLint {
         return true;
       }
     }
-    
+
     return false;
   }
 
@@ -712,7 +744,7 @@ export class TFLLint {
         message: "No version specified, using default: 'latest'",
         elementId: node.id,
         elementType: "node",
-        code: "missing-node-version"
+        code: "missing-node-version",
       });
       return issues;
     }
@@ -722,22 +754,24 @@ export class TFLLint {
     if (!versionValidation.isValid) {
       issues.push({
         severity: "error",
-        message: versionValidation.error || `Invalid version specification: '${version}'`,
+        message:
+          versionValidation.error ||
+          `Invalid version specification: '${version}'`,
         elementId: node.id,
         elementType: "node",
-        code: "invalid-version-syntax"
+        code: "invalid-version-syntax",
       });
       return issues;
     }
 
     // 检查预发布版本（警告）
-    if (version.includes('-') && !version.startsWith('latest')) {
+    if (version.includes("-") && !version.startsWith("latest")) {
       issues.push({
         severity: "warning",
         message: `Using prerelease version: '${version}'. Consider using a stable version for production.`,
         elementId: node.id,
         elementType: "node",
-        code: "prerelease-version"
+        code: "prerelease-version",
       });
     }
 
@@ -747,18 +781,21 @@ export class TFLLint {
   /**
    * 验证版本语法
    */
-  private validateVersionSyntax(version: string): { isValid: boolean; error?: string } {
-    if (!version || typeof version !== 'string') {
+  private validateVersionSyntax(version: string): {
+    isValid: boolean;
+    error?: string;
+  } {
+    if (!version || typeof version !== "string") {
       return { isValid: false, error: "Version specification is required" };
     }
 
     // 定义有效的版本模式
     const patterns = {
-      exact: /^\d+\.\d+\.\d+(-[a-zA-Z0-9.-]+)?(\+[a-zA-Z0-9.-]+)?$/,  // 1.2.3, 1.2.3-beta.1
-      latest: /^latest(-[a-zA-Z]+)?$/,  // latest, latest-beta
-      caret: /^\^\d+\.\d+\.\d+$/,  // ^1.2.0
-      tilde: /^~\d+\.\d+\.\d+$/,  // ~1.2.0
-      comparison: /^(>=?|<=?|>|<)\d+\.\d+\.\d+$/,  // >=1.0.0, <2.0.0
+      exact: /^\d+\.\d+\.\d+(-[a-zA-Z0-9.-]+)?(\+[a-zA-Z0-9.-]+)?$/, // 1.2.3, 1.2.3-beta.1
+      latest: /^latest(-[a-zA-Z]+)?$/, // latest, latest-beta
+      caret: /^\^\d+\.\d+\.\d+$/, // ^1.2.0
+      tilde: /^~\d+\.\d+\.\d+$/, // ~1.2.0
+      comparison: /^(>=?|<=?|>|<)\d+\.\d+\.\d+$/, // >=1.0.0, <2.0.0
     };
 
     // 检查是否匹配任何有效模式
@@ -770,7 +807,7 @@ export class TFLLint {
 
     return {
       isValid: false,
-      error: `Invalid version specification: '${version}'. Expected format: '1.2.3', 'latest', '^1.2.0', '~1.2.0', etc.`
+      error: `Invalid version specification: '${version}'. Expected format: '1.2.3', 'latest', '^1.2.0', '~1.2.0', etc.`,
     };
   }
 
@@ -800,7 +837,10 @@ export function lintFlow(data: FlowData, options?: LintOptions): LintIssue[] {
 /**
  * 便捷函数：专门用于单节点执行的 linting
  */
-export function lintNodeExecution(data: FlowData, options?: Omit<LintOptions, 'mode'>): LintIssue[] {
-  const linter = new TFLLint({ ...options, mode: 'node' });
+export function lintNodeExecution(
+  data: FlowData,
+  options?: Omit<LintOptions, "mode">
+): LintIssue[] {
+  const linter = new TFLLint({ ...options, mode: "node" });
   return linter.lintFlow(data);
 }

@@ -1,8 +1,8 @@
 /**
  * Weather 语法类型定义
- * 
+ *
  * 包含 Full 版本和 Essential 版本的完整类型定义
- * 
+ *
  * @see https://github.com/TradingFlow/docs/weather-syntax.md
  * @see https://github.com/TradingFlow/docs/weather-syntax-comparison.md
  */
@@ -23,85 +23,80 @@ export interface Position {
  * 输入控件类型
  */
 export type InputType =
-  | 'text'
-  | 'number'
-  | 'paragraph'
-  | 'select'
-  | 'searchSelect'
-  | 'button'
-  | 'object'
-  | 'paramMatrix';
+  | "text"
+  | "number"
+  | "paragraph"
+  | "select"
+  | "searchSelect"
+  | "button"
+  | "object"
+  | "paramMatrix";
 
 /**
  * 数据类型
  * 包含所有前端 UI 控件支持的数据类型
  */
 export type DataType =
-  | 'none'
-  | 'text'
-  | 'number'
-  | 'select'
-  | 'multiselect'
-  | 'object'
-  | 'paragraph'
-  | 'address'
-  | 'searchSelect'
-  | 'paramMatrix'
-  | 'radio'
-  | 'radioGroup'
-  | 'button'
-  | 'array'
-  | 'boolean'
-  | 'wallet'  // 钱包地址类型
-  | 'chain';  // 区块链类型
+  | "none"
+  | "text"
+  | "number"
+  | "select"
+  | "multiselect"
+  | "object"
+  | "paragraph"
+  | "address"
+  | "searchSelect"
+  | "paramMatrix"
+  | "radio"
+  | "radioGroup"
+  | "button"
+  | "array"
+  | "boolean"
+  | "wallet" // 钱包地址类型
+  | "chain"; // 区块链类型
 
 /**
  * Handle 颜色（连接句柄颜色）
  */
 export type HandleColor =
-  | 'sky'      // 数据流类型（蓝色）
-  | 'emerald'  // 交易类型（绿色）
-  | 'amber'    // 配置类型（橙色）
-  | 'rose';    // 输出类型（粉色）
+  | "sky" // 数据流类型（蓝色）
+  | "emerald" // 交易类型（绿色）
+  | "amber" // 配置类型（橙色）
+  | "rose"; // 输出类型（粉色）
 
 /**
  * 节点分类
  */
 export type NodeCollection =
-  | 'input'    // 数据输入节点
-  | 'compute'  // 计算处理节点
-  | 'trade'    // 交易操作节点
-  | 'core';    // 核心功能节点
+  | "input" // 数据输入节点
+  | "compute" // 计算处理节点
+  | "trade" // 交易操作节点
+  | "core"; // 核心功能节点
 
 /**
  * 节点类型
  */
 export type NodeType =
   // Input Nodes
-  | 'x_listener_node'
-  | 'rss_listener_node'
-  | 'binance_price_node'
-  | 'dataset_input_node'
+  | "x_listener_node"
+  | "binance_price_node"
+  | "dataset_input_node"
   // Compute Nodes
-  | 'ai_model_node'
-  | 'code_node'
+  | "ai_model_node"
+  | "code_node"
   // Trade Nodes
-  | 'buy_node'
-  | 'sell_node'
-  | 'swap_node'
-  | 'vault_node'
+  | "buy_node"
+  | "sell_node"
+  | "swap_node"
+  | "vault_node"
   // Output Nodes
-  | 'dataset_output_node'
-  | 'telegram_sender_node';
+  | "dataset_output_node"
+  | "telegram_sender_node";
 
 /**
  * 边的类型（样式）
  */
-export type EdgeType =
-  | 'default'
-  | 'step'
-  | 'smoothstep'
-  | 'straight';
+export type EdgeType = "default" | "step" | "smoothstep" | "straight";
 
 // ============================================================================
 // Handle 配置
@@ -128,12 +123,12 @@ export interface EssentialInput {
   title: string;
   type: DataType;
   inputType: InputType;
-  required?: boolean;  // 可选，默认 false
-  placeholder?: string;  // 可选
-  value?: unknown;  // 可选，可以是任何类型的值
-  min?: number;  // 用于数字类型验证
-  max?: number;  // 用于数字类型验证
-  skipUserValueRestore?: boolean;  // Agent 标记：此值由 Agent 生成，不应保留为 "User Selected"
+  required?: boolean; // 可选，默认 false
+  placeholder?: string; // 可选
+  value?: unknown; // 可选，可以是任何类型的值
+  min?: number; // 用于数字类型验证
+  max?: number; // 用于数字类型验证
+  skipUserValueRestore?: boolean; // Agent 标记：此值由 Agent 生成，不应保留为 "User Selected"
 }
 
 /**
@@ -145,7 +140,7 @@ export interface EssentialOutput {
   title: string;
   type: DataType;
   description?: string;
-  isDeleted?: boolean;  // 用户是否折叠/删除此输出（agent 生成、后端存储需要）
+  isDeleted?: boolean; // 用户是否折叠/删除此输出（agent 生成、后端存储需要）
 }
 
 /**
@@ -200,12 +195,15 @@ export interface EssentialFlow {
 export interface FullInput extends EssentialInput {
   // UI 配置（从 nodeConfig 加载，不从 Essential 存储）
   handle: HandleConfig;
-  options?: Array<string | { value: string; label: string; disabled?: boolean; tooltip?: string }>;
-  
+  options?: Array<
+    | string
+    | { value: string; label: string; disabled?: boolean; tooltip?: string }
+  >;
+
   // Full 层扩展字段
-  isDeleted?: boolean;  // 删除标记
-  disabled?: boolean;   // 禁用状态
-  _actualValue?: unknown;  // 实际值（用于显示值与实际值不同的情况）
+  isDeleted?: boolean; // 删除标记
+  disabled?: boolean; // 禁用状态
+  _actualValue?: unknown; // 实际值（用于显示值与实际值不同的情况）
   _instanceState?: {
     hasLoaded?: boolean;
     error?: string;
@@ -223,7 +221,12 @@ export interface FullInput extends EssentialInput {
     cacheDuration?: number;
     dependencies?: string[];
     loader: () => Promise<unknown>;
-    processor?: (data: unknown) => Array<string | { value: string; label: string; disabled?: boolean; tooltip?: string }>;
+    processor?: (
+      data: unknown
+    ) => Array<
+      | string
+      | { value: string; label: string; disabled?: boolean; tooltip?: string }
+    >;
     errorHandler?: (error: Error) => string;
     retry?: {
       times: number;
@@ -247,7 +250,7 @@ export interface FullOutput extends EssentialOutput {
 export interface MenuItem {
   key: string;
   label: string;
-  icon?: unknown;  // React.ReactNode or any icon type
+  icon?: unknown; // React.ReactNode or any icon type
   danger?: boolean;
   onClick?: () => void;
 }
@@ -257,7 +260,7 @@ export interface MenuItem {
  */
 export interface HandleSignal {
   handleId: string;
-  handleType: 'input' | 'output';
+  handleType: "input" | "output";
   data: unknown;
   timestamp: string;
   fromNode?: string;
@@ -271,8 +274,8 @@ export interface HandleSignal {
 export interface FullNodeData extends EssentialNodeData {
   inputs: FullInput[];
   outputs: FullOutput[];
-  id: string;  // 冗余字段，与节点ID相同
-  edges: FullEdge[];  // 节点相关的边（冗余，顶层已有）
+  id: string; // 冗余字段，与节点ID相同
+  edges: FullEdge[]; // 节点相关的边（冗余，顶层已有）
 }
 
 /**
@@ -286,7 +289,7 @@ export interface FullNode extends EssentialNode {
  * Full: 边定义 (接口层)
  */
 export interface FullEdge extends EssentialEdge {
-  type?: EdgeType;  // 边类型（样式）
+  type?: EdgeType; // 边类型（样式）
 }
 
 /**
@@ -305,8 +308,8 @@ export interface FullFlow extends EssentialFlow {
  * 节点执行状态
  */
 export interface NodeExecutionState {
-  status: 'idle' | 'pending' | 'running' | 'completed' | 'error' | 'stopped';
-  progress?: number;  // 0-1
+  status: "idle" | "pending" | "running" | "completed" | "error" | "stopped";
+  progress?: number; // 0-1
   message?: string;
   startTime?: number;
   endTime?: number;
@@ -415,7 +418,18 @@ export interface EditorDiff<T = unknown> {
  */
 export interface EditorPreloadConfig {
   loader: () => Promise<unknown>;
-  processor?: (data: unknown) => Array<string | { value: string; label: string; disabled?: boolean; tooltip?: string; [key: string]: any }>;
+  processor?: (
+    data: unknown
+  ) => Array<
+    | string
+    | {
+        value: string;
+        label: string;
+        disabled?: boolean;
+        tooltip?: string;
+        [key: string]: any;
+      }
+  >;
   errorHandler?: (error: unknown) => string;
   retry?: {
     times: number;
@@ -435,7 +449,7 @@ export interface EditorPreloadConfig {
  * EditorFull: 输入参数配置 (编辑器扩展版)
  * 在 FullInput 基础上添加编辑器特定功能
  */
-export interface EditorFullInput extends Omit<FullInput, 'preload'> {
+export interface EditorFullInput extends Omit<FullInput, "preload"> {
   // 差异追踪字段
   titleDiff?: EditorDiff<string>;
   tooltipDiff?: EditorDiff<string>;
@@ -443,17 +457,22 @@ export interface EditorFullInput extends Omit<FullInput, 'preload'> {
   requiredDiff?: EditorDiff<boolean>;
   placeholderDiff?: EditorDiff<string>;
   valueDiff?: EditorDiff<unknown>;
-  optionsDiff?: EditorDiff<Array<string | { value: string; label: string; disabled?: boolean; tooltip?: string }>>;
+  optionsDiff?: EditorDiff<
+    Array<
+      | string
+      | { value: string; label: string; disabled?: boolean; tooltip?: string }
+    >
+  >;
   handleDiff?: EditorDiff<{ color?: string }>;
-  
+
   // 编辑器特定字段
-  tooltip?: string;  // 提示文本
-  className?: string;  // CSS 类名
-  chainRef?: string;  // 关联的链选择输入的 ID
-  
+  tooltip?: string; // 提示文本
+  className?: string; // CSS 类名
+  chainRef?: string; // 关联的链选择输入的 ID
+
   // 使用前端的预加载配置
   preload?: EditorPreloadConfig;
-  
+
   // 扩展实例状态 - 添加连接状态
   _instanceState?: {
     // FullInput 的预加载状态
@@ -465,7 +484,7 @@ export interface EditorFullInput extends Omit<FullInput, 'preload'> {
     isConnected?: boolean;
     connectedHandles?: string[];
   };
-  
+
   // 兼容旧代码的预加载状态
   _preloadState?: {
     isLoading?: boolean;
@@ -473,7 +492,7 @@ export interface EditorFullInput extends Omit<FullInput, 'preload'> {
     error?: string;
     lastLoadTime?: number;
     cachedData?: unknown;
-    lastDependencies?: any[];  // 上次 preload 时的 dependencies 值
+    lastDependencies?: any[]; // 上次 preload 时的 dependencies 值
   };
 }
 
@@ -490,27 +509,28 @@ export interface EditorFullOutput extends FullOutput {
 /**
  * EditorFull: 节点数据 (编辑器扩展版 - 包含所有前端实现字段)
  */
-export interface EditorFullNodeData extends Omit<FullNodeData, 'inputs' | 'outputs' | 'collection' | 'signals'> {
+export interface EditorFullNodeData
+  extends Omit<FullNodeData, "inputs" | "outputs" | "collection" | "signals"> {
   inputs: EditorFullInput[];
   outputs: EditorFullOutput[];
-  collection: string | null;  // 编辑器中 collection 可以为 null
-  signals?: unknown[];  // 编辑器使用自己的 NodeSignal 类型
-  
+  collection: string | null; // 编辑器中 collection 可以为 null
+  signals?: unknown[]; // 编辑器使用自己的 NodeSignal 类型
+
   // 编辑器实现字段
-  menuItems?: MenuItem[];  // 右键菜单项
-  isDeepEdit?: boolean;  // 深度编辑模式
-  isFlowExecuting?: boolean;  // 流程执行状态
-  isStopping?: boolean;  // 停止状态
-  handleDeleteNode?: (nodeId: string) => void;  // 删除节点回调
-  onDataChange?: (nodeId: string, data: any) => void;  // 数据变更回调
-  onRunOnce?: () => void;  // 单次运行回调
-  isLocked?: boolean;  // 锁定状态
-  icon?: unknown;  // React.ReactNode - 节点图标
-  lintErrors?: any[];  // Lint 错误列表
-  
+  menuItems?: MenuItem[]; // 右键菜单项
+  isDeepEdit?: boolean; // 深度编辑模式
+  isFlowExecuting?: boolean; // 流程执行状态
+  isStopping?: boolean; // 停止状态
+  handleDeleteNode?: (nodeId: string) => void; // 删除节点回调
+  onDataChange?: (nodeId: string, data: any) => void; // 数据变更回调
+  onRunOnce?: () => void; // 单次运行回调
+  isLocked?: boolean; // 锁定状态
+  icon?: unknown; // React.ReactNode - 节点图标
+  lintErrors?: any[]; // Lint 错误列表
+
   // 执行状态信息
   executionInfo?: {
-    status: string;  // 节点状态：idle, pending, running, completed, failed, skipped, terminated, etc.
+    status: string; // 节点状态：idle, pending, running, completed, failed, skipped, terminated, etc.
     error?: string | null;
     timestamp?: string;
     metadata?: Record<string, unknown>;
@@ -526,30 +546,30 @@ export interface EditorFullNodeData extends Omit<FullNodeData, 'inputs' | 'outpu
 /**
  * EditorFull: 节点 (编辑器扩展版 - 包含所有前端实现字段)
  */
-export interface EditorFullNode extends Omit<FullNode, 'data'> {
+export interface EditorFullNode extends Omit<FullNode, "data"> {
   data: EditorFullNodeData;
   // 前端实现字段
-  className?: string;  // CSS 类名
-  width?: number;  // 节点宽度
-  height?: number;  // 节点高度
-  selected?: boolean;  // 选中状态
-  positionAbsolute?: Position;  // 绝对位置（计算值）
-  dragging?: boolean;  // 拖拽状态
+  className?: string; // CSS 类名
+  width?: number; // 节点宽度
+  height?: number; // 节点高度
+  selected?: boolean; // 选中状态
+  positionAbsolute?: Position; // 绝对位置（计算值）
+  dragging?: boolean; // 拖拽状态
 }
 
 /**
  * EditorFull: 边 (编辑器扩展版 - 包含所有前端实现字段)
  */
 export interface EditorFullEdge extends FullEdge {
-  selected?: boolean;  // 选中状态
-  className?: string;  // CSS 类名
-  animated?: boolean;  // 动画效果
+  selected?: boolean; // 选中状态
+  className?: string; // CSS 类名
+  animated?: boolean; // 动画效果
 }
 
 /**
  * EditorFull: 工作流 (编辑器扩展版)
  */
-export interface EditorFullFlow extends Omit<FullFlow, 'nodes' | 'edges'> {
+export interface EditorFullFlow extends Omit<FullFlow, "nodes" | "edges"> {
   nodes: EditorFullNode[];
   edges: EditorFullEdge[];
 }
@@ -564,7 +584,7 @@ export interface EditorFullFlow extends Omit<FullFlow, 'nodes' | 'edges'> {
 export interface ValidationError {
   field: string;
   message: string;
-  severity: 'error' | 'warning';
+  severity: "error" | "warning";
   path?: string;
 }
 
@@ -581,22 +601,21 @@ export interface ValidationResult {
 // 导出所有类型
 // ============================================================================
 
-export type {
-  // 基础类型已在上面定义
-};
+export // 基础类型已在上面定义
+ type {};
 
 /**
  * 类型守卫：检查是否为 Full 版本节点
  */
 export function isFullNode(node: EssentialNode | FullNode): node is FullNode {
-  return 'width' in node || 'className' in node;
+  return "width" in node || "className" in node;
 }
 
 /**
  * 类型守卫：检查是否为 Full 版本边
  */
 export function isFullEdge(edge: EssentialEdge | FullEdge): edge is FullEdge {
-  return 'type' in edge || 'animated' in edge;
+  return "type" in edge || "animated" in edge;
 }
 
 /**
