@@ -1,14 +1,14 @@
 /**
  * TradingFlow Weather Linter - Type Definitions
- * 
+ *
  * 导出所有 Weather 相关的类型定义
- * 
+ *
  * 注：转换实现（converters）和工具函数（utils）已移至前端
  * linter 包仅提供类型定义
  */
 
 // 导出完整的 Weather 类型系统
-export * from './types/weather';
+export * from "./types/weather";
 // converters 和 utils 已废弃 - 转换逻辑应在前端实现
 
 // ============================================================================
@@ -76,23 +76,22 @@ export interface FlowData {
 /**
  * @deprecated 使用 NodeType from './types/weather'
  */
-export type NodeType = 
+export type NodeType =
   // Input Nodes
-  | 'binance_price_node'
-  | 'dataset_input_node'
-  | 'rss_listener_node'
-  | 'x_listener_node'
+  | "binance_price_node"
+  | "dataset_input_node"
+  | "x_listener_node"
   // Compute Nodes
-  | 'ai_model_node'
-  | 'code_node'
+  | "ai_model_node"
+  | "code_node"
   // Trade Nodes
-  | 'swap_node'
-  | 'buy_node'
-  | 'sell_node'
-  | 'vault_node'
+  | "swap_node"
+  | "buy_node"
+  | "sell_node"
+  | "vault_node"
   // Output Nodes
-  | 'dataset_output_node'
-  | 'telegram_sender_node';
+  | "dataset_output_node"
+  | "telegram_sender_node";
 
 /**
  * @deprecated 创建新的节点定义接口在 weather.ts
@@ -100,7 +99,7 @@ export type NodeType =
 export interface NodeDefinition {
   type: NodeType;
   description: string;
-  category: 'input' | 'compute' | 'trade' | 'output';
+  category: "input" | "compute" | "trade" | "output";
   requiredInputs: string[];
   optionalInputs: string[];
   outputs: string[];
