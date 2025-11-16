@@ -30,7 +30,9 @@ export type InputType =
   | "searchSelect"
   | "button"
   | "object"
-  | "paramMatrix";
+  | "paramMatrix"
+  | "switch" // Switch 切换器（Number/Percentage）
+  | "percentage"; // 百分比滑块（0-100%）
 
 /**
  * 数据类型
@@ -53,7 +55,9 @@ export type DataType =
   | "array"
   | "boolean"
   | "wallet" // 钱包地址类型
-  | "chain"; // 区块链类型
+  | "chain" // 区块链类型
+  | "switch" // Switch 切换器
+  | "percentage"; // 百分比（0-100%）
 
 /**
  * Handle 颜色（连接句柄颜色）
@@ -99,6 +103,33 @@ export type NodeType =
 export type EdgeType = "default" | "step" | "smoothstep" | "straight";
 
 // ============================================================================
+// Switch 类型配置
+// ============================================================================
+
+/**
+ * Switch 字段的值结构
+ * 例如: { mode: "number", value: "100" } 或 { mode: "percentage", value: "50" }
+ */
+export interface SwitchValue {
+  mode: string; // 当前选择的模式 ('number' | 'percentage' 等)
+  value: string; // 具体的值（字符串形式）
+}
+
+/**
+ * Switch 选项配置
+ * 定义每个模式的配置
+ */
+export interface SwitchOption {
+  value: string; // 模式标识 ('number' | 'percentage')
+  label: string; // 显示标签
+  inputType: InputType; // 该模式下的输入类型
+  min?: number; // 最小值（用于 percentage 等）
+  max?: number; // 最大值（用于 percentage 等）
+  step?: number; // 步长（用于 percentage 滑块）
+  suffix?: string; // 后缀（如 '%'）
+}
+
+// ============================================================================
 // Handle 配置
 // ============================================================================
 
@@ -125,10 +156,11 @@ export interface EssentialInput {
   inputType: InputType;
   required?: boolean; // 可选，默认 false
   placeholder?: string; // 可选
-  value?: unknown; // 可选，可以是任何类型的值
+  value?: unknown; // 可选，可以是任何类型的值（对于 switch 类型，值为 SwitchValue）
   min?: number; // 用于数字类型验证
   max?: number; // 用于数字类型验证
   skipUserValueRestore?: boolean; // Agent 标记：此值由 Agent 生成，不应保留为 "User Selected"
+  switchOptions?: SwitchOption[]; // 用于 switch 类型的选项配置
 }
 
 /**
@@ -418,9 +450,7 @@ export interface EditorDiff<T = unknown> {
  */
 export interface EditorPreloadConfig {
   loader: () => Promise<unknown>;
-  processor?: (
-    data: unknown
-  ) => Array<
+  processor?: (data: unknown) => Array<
     | string
     | {
         value: string;
