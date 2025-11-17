@@ -78,7 +78,7 @@ export interface FlowData {
  */
 export type NodeType =
   // Input Nodes
-  | "binance_price_node"
+  | "price_node"
   | "dataset_input_node"
   | "x_listener_node"
   // Compute Nodes

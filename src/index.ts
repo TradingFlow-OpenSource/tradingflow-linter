@@ -44,13 +44,13 @@ export interface LintIssue {
 // TFL 节点定义
 const NODE_DEFINITIONS: Record<NodeType, NodeDefinition> = {
   // Input Nodes
-  binance_price_node: {
-    type: "binance_price_node",
-    description: "Get Binance market data for specified trading pairs",
+  price_node: {
+    type: "price_node",
+    description: "Get cryptocurrency price data from CoinGecko",
     category: "input",
-    requiredInputs: ["symbol", "interval"],
-    optionalInputs: ["limit"],
-    outputs: ["data"], //
+    requiredInputs: ["source", "data_type", "symbol"],
+    optionalInputs: [],
+    outputs: ["data"],
   },
   dataset_input_node: {
     type: "dataset_input_node",

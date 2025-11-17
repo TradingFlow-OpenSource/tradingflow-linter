@@ -83,7 +83,7 @@ export type NodeCollection =
 export type NodeType =
   // Input Nodes
   | "x_listener_node"
-  | "binance_price_node"
+  | "price_node"
   | "dataset_input_node"
   // Compute Nodes
   | "ai_model_node"
