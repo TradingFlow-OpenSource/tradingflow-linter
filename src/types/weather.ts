@@ -193,6 +193,7 @@ export interface EssentialNode {
   position: Position;
   id: string;
   type: NodeType;
+  version?: string; // 节点版本，默认为 'latest'
   data: EssentialNodeData;
 }
 
