@@ -92,19 +92,28 @@ const NODE_DEFINITIONS: Record<NodeType, NodeDefinition> = {
     type: "swap_node",
     description: "Process swap operations and execute swaps",
     category: "trade",
-    requiredInputs: ["from_token", "to_token", "chain", "vault_address"],
-    optionalInputs: [
-      "amount_in_percentage",
-      "amount_in_human_readble",
+    // 🔧 FIX: 更新为新的节点结构 - 移除 chain 和 vault_address，改为 vault 和 amount_in_human_readable
+    requiredInputs: [
+      "from_token",
+      "to_token",
+      "amount_in_human_readable",
       "slippery",
+      "vault",
     ],
+    optionalInputs: ["amount_in_percentage", "amount_in_human_readble"],
     outputs: ["trade_receipt"],
   },
   buy_node: {
     type: "buy_node",
     description: "Process buy signals and execute buy operations",
     category: "trade",
-    requiredInputs: ["buy_token", "base_token", "vault_address", "chain"],
+    // 🔧 FIX: 更新为新的节点结构 - 移除 chain 和 vault_address，改为 vault 和 amount_in_human_readable
+    requiredInputs: [
+      "buy_token",
+      "base_token",
+      "amount_in_human_readable",
+      "vault",
+    ],
     optionalInputs: [
       "order_type",
       "limited_price",
@@ -117,7 +126,13 @@ const NODE_DEFINITIONS: Record<NodeType, NodeDefinition> = {
     type: "sell_node",
     description: "Process sell signals and execute sell operations",
     category: "trade",
-    requiredInputs: ["sell_token", "base_token", "vault_address", "chain"],
+    // 🔧 FIX: 更新为新的节点结构 - 移除 chain 和 vault_address，改为 vault 和 amount_in_human_readable
+    requiredInputs: [
+      "sell_token",
+      "base_token",
+      "amount_in_human_readable",
+      "vault",
+    ],
     optionalInputs: [
       "order_type",
       "limited_price",
