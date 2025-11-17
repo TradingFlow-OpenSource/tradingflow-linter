@@ -368,12 +368,12 @@ export class TFLLint {
           fieldType: "input",
         });
       } else {
-        // 【连线优先逻辑】检查是否被连线
+        // 🔧 FIX: 正确的逻辑 - 必要字段只要被连接或有值（包括空字符串）就OK
         const isConnected = this.isInputConnected(node.id, requiredInput);
-        const isEmpty = this.isEmptyValue(input.value);
+        const hasValue = input.value !== undefined && input.value !== null;
 
-        // 如果既没有值，也没有被连线，报错
-        if (isEmpty && !isConnected) {
+        // 只有当既没有值（undefined/null），也没有被连线时才报错
+        if (!hasValue && !isConnected) {
           issues.push({
             severity: "error",
             message: `Required input "${requiredInput}" has no value and is not connected`,
