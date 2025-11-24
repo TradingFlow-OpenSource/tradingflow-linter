@@ -551,9 +551,7 @@ export class TFLLint {
       // 检查目标输入端口存在性
       if (edge.target && edge.targetHandle && nodeMap.has(edge.target)) {
         const targetNode = nodeMap.get(edge.target)!;
-        const targetInputs = (targetNode.data.inputs || []).map(
-          (input) => input.id
-        );
+        const targetInputs = this.getValidInputHandles(targetNode);
         // Strip -handle suffix for validation (frontend uses field_name-handle format)
         const handleToCheck = edge.targetHandle.endsWith("-handle")
           ? edge.targetHandle.slice(0, -7)
@@ -570,6 +568,40 @@ export class TFLLint {
     });
 
     return issues;
+  }
+
+  /**
+   * 获取节点有效的输入句柄列表，包含动态参数
+   */
+  private getValidInputHandles(node: EssentialNode): string[] {
+    const inputs = node.data?.inputs || [];
+    const handleIds = inputs.map((input) => input.id);
+
+    // ai_model_node 支持通过 parameters 定义动态句柄
+    if (node.type === "ai_model_node") {
+      const parametersInput = inputs.find((input) => input.id === "parameters");
+      const parameterValue = parametersInput?.value;
+
+      if (Array.isArray(parameterValue)) {
+        parameterValue.forEach((param) => {
+          const paramName =
+            typeof param === "string"
+              ? param
+              : typeof param?.name === "string"
+              ? param.name
+              : undefined;
+
+          if (paramName) {
+            const normalized = paramName.trim();
+            if (normalized && !handleIds.includes(normalized)) {
+              handleIds.push(normalized);
+            }
+          }
+        });
+      }
+    }
+
+    return handleIds;
   }
 
   /**
