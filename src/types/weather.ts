@@ -28,7 +28,7 @@ export type InputType =
   | "paragraph"
   | "select"
   | "searchSelect"
-  | "button"
+  | "codeInput"
   | "object"
   | "paramMatrix"
   | "switch" // Switch 切换器（Number/Percentage）
@@ -51,7 +51,7 @@ export type DataType =
   | "paramMatrix"
   | "radio"
   | "radioGroup"
-  | "button"
+  | "codeInput"
   | "array"
   | "boolean"
   | "wallet" // 钱包地址类型
