@@ -85,6 +85,7 @@ export type NodeType =
   | "x_listener_node"
   | "price_node"
   | "dataset_input_node"
+  | "rootdata_node"
   // Compute Nodes
   | "ai_model_node"
   | "code_node"
