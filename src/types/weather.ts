@@ -31,6 +31,7 @@ export type InputType =
   | "codeInput"
   | "object"
   | "paramMatrix"
+  | "boolean" // 布尔开关（True/False Toggle）
   | "switch" // Switch 切换器（Number/Percentage）
   | "percentage"; // 百分比滑块（0-100%）
 
