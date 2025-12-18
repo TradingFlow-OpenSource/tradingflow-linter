@@ -163,6 +163,8 @@ export interface EssentialInput {
   max?: number; // 用于数字类型验证
   skipUserValueRestore?: boolean; // Agent 标记：此值由 Agent 生成，不应保留为 "User Selected"
   switchOptions?: SwitchOption[]; // 用于 switch 类型的选项配置
+  advanced?: boolean; // 标记为高级参数（配置层，通常从 nodeConfig 读取）
+  isHidden?: boolean; // 当前是否隐藏（运行时状态，持久化保存用户选择）
 }
 
 /**
