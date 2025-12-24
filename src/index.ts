@@ -60,12 +60,20 @@ const NODE_DEFINITIONS: Record<NodeType, NodeDefinition> = {
     optionalInputs: [],
     outputs: ["data"],
   },
+  gsheet_input_node: {
+    type: "gsheet_input_node",
+    description: "Load data from Google Sheets",
+    category: "input",
+    requiredInputs: ["doc_link"],
+    optionalInputs: [],
+    outputs: ["data"],
+  },
   x_listener_node: {
     type: "x_listener_node",
     description: "Monitor X (formerly Twitter) accounts",
     category: "input",
     requiredInputs: ["accounts"],
-    optionalInputs: ["keywords"],
+    optionalInputs: ["keywords", "search_mode", "query_type", "limit"],
     outputs: ["latest_tweets"],
   },
   rootdata_node: {
@@ -127,53 +135,39 @@ const NODE_DEFINITIONS: Record<NodeType, NodeDefinition> = {
     type: "swap_node",
     description: "Process swap operations and execute swaps",
     category: "trade",
-    // 🔧 FIX: 更新为新的节点结构 - 移除 chain 和 vault_address，改为 vault 和 amount_in_human_readable
     requiredInputs: [
       "from_token",
       "to_token",
       "amount_in_human_readable",
-      "slippery",
       "vault",
     ],
-    optionalInputs: ["amount_in_percentage", "amount_in_human_readble"],
+    optionalInputs: ["slippery"],
     outputs: ["trade_receipt"],
   },
   buy_node: {
     type: "buy_node",
     description: "Process buy signals and execute buy operations",
     category: "trade",
-    // 🔧 FIX: 更新为新的节点结构 - 移除 chain 和 vault_address，改为 vault 和 amount_in_human_readable
     requiredInputs: [
       "buy_token",
       "base_token",
       "amount_in_human_readable",
       "vault",
     ],
-    optionalInputs: [
-      "order_type",
-      "limited_price",
-      "amount_in_percentage",
-      "amount_in_human_readble",
-    ],
+    optionalInputs: ["slippery"],
     outputs: ["trade_receipt"],
   },
   sell_node: {
     type: "sell_node",
     description: "Process sell signals and execute sell operations",
     category: "trade",
-    // 🔧 FIX: 更新为新的节点结构 - 移除 chain 和 vault_address，改为 vault 和 amount_in_human_readable
     requiredInputs: [
       "sell_token",
       "base_token",
       "amount_in_human_readable",
       "vault",
     ],
-    optionalInputs: [
-      "order_type",
-      "limited_price",
-      "amount_in_percentage",
-      "amount_in_human_readble",
-    ],
+    optionalInputs: ["slippery"],
     outputs: ["trade_receipt"],
   },
   vault_node: {
@@ -189,6 +183,14 @@ const NODE_DEFINITIONS: Record<NodeType, NodeDefinition> = {
   dataset_output_node: {
     type: "dataset_output_node",
     description: "Save data to user's Google Sheets",
+    category: "output",
+    requiredInputs: ["doc_link", "data"],
+    optionalInputs: [],
+    outputs: [],
+  },
+  gsheet_output_node: {
+    type: "gsheet_output_node",
+    description: "Save data to Google Sheets",
     category: "output",
     requiredInputs: ["doc_link", "data"],
     optionalInputs: [],

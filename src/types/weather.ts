@@ -86,6 +86,7 @@ export type NodeType =
   | "x_listener_node"
   | "price_node"
   | "dataset_input_node"
+  | "gsheet_input_node"
   | "rootdata_node"
   // Compute Nodes
   | "ai_model_node"
@@ -97,6 +98,7 @@ export type NodeType =
   | "vault_node"
   // Output Nodes
   | "dataset_output_node"
+  | "gsheet_output_node"
   | "telegram_sender_node";
 
 /**
