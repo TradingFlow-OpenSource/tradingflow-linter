@@ -386,12 +386,12 @@ export class TFLLint {
   ): LintIssue[] {
     const issues: LintIssue[] = [];
 
-    // 检查必需输入
+    // 检查必需输入（使用大小写不敏感的 Map）
     const nodeInputsMap = new Map(
-      (node.data.inputs || []).map((input) => [input.id, input])
+      (node.data.inputs || []).map((input) => [input.id?.toLowerCase(), input])
     );
     definition.requiredInputs.forEach((requiredInput) => {
-      const input = nodeInputsMap.get(requiredInput);
+      const input = nodeInputsMap.get(requiredInput.toLowerCase());
 
       if (!input) {
         // 字段不存在
@@ -437,12 +437,16 @@ export class TFLLint {
           });
         }
 
-        // 检查是否是有效的输入
+        // 检查是否是有效的输入（大小写不敏感匹配）
         const allValidInputs = [
           ...definition.requiredInputs,
           ...definition.optionalInputs,
         ];
-        if (input.id && !allValidInputs.includes(input.id)) {
+        const inputIdLower = input.id?.toLowerCase();
+        const isValidInput = allValidInputs.some(
+          (validId) => validId.toLowerCase() === inputIdLower
+        );
+        if (input.id && !isValidInput) {
           issues.push({
             severity: "warning",
             message: `Node ${node.id} has unknown input: ${input.id}`,
@@ -723,12 +727,14 @@ export class TFLLint {
   }
 
   /**
-   * 检查输入是否被连接
+   * 检查输入是否被连接（大小写不敏感匹配）
    */
   private isInputConnected(nodeId: string, inputId: string): boolean {
     if (!this.edges || this.edges.length === 0) {
       return false;
     }
+
+    const inputIdLower = inputId.toLowerCase();
 
     // 检查是否有边连接到这个输入
     // targetHandle 格式可能是 "inputId" 或 "nodeId__inputId"
@@ -742,15 +748,17 @@ export class TFLLint {
         return false;
       }
 
+      const handleLower = edge.targetHandle.toLowerCase();
+
       // 可能的格式：
       // 1. "inputId"
       // 2. "nodeId__inputId"
-      if (edge.targetHandle === inputId) {
+      if (handleLower === inputIdLower) {
         return true;
       }
 
-      const parts = edge.targetHandle.split("__");
-      if (parts.length > 1 && parts[1] === inputId) {
+      const parts = handleLower.split("__");
+      if (parts.length > 1 && parts[1] === inputIdLower) {
         return true;
       }
 
