@@ -52,6 +52,22 @@ const NODE_DEFINITIONS: Record<NodeType, NodeDefinition> = {
     optionalInputs: [],
     outputs: ["data"],
   },
+  binance_price_node: {
+    type: "binance_price_node",
+    description: "Get Binance market data for specified trading pairs",
+    category: "input",
+    requiredInputs: ["symbol", "interval"],
+    optionalInputs: ["limit"],
+    outputs: ["current_price", "kline_data"],
+  },
+  rss_listener_node: {
+    type: "rss_listener_node",
+    description: "Get information from RSS feeds",
+    category: "input",
+    requiredInputs: ["route"],
+    optionalInputs: ["parameters", "keywords"],
+    outputs: ["feeds"],
+  },
   dataset_input_node: {
     type: "dataset_input_node",
     description: "Load dataset from user's Google Sheets",
@@ -194,7 +210,7 @@ const NODE_DEFINITIONS: Record<NodeType, NodeDefinition> = {
     category: "output",
     requiredInputs: ["doc_link", "data"],
     optionalInputs: [],
-    outputs: [],
+    outputs: ["status_output_handle", "error_handle"],
   },
   telegram_sender_node: {
     type: "telegram_sender_node",
@@ -202,7 +218,18 @@ const NODE_DEFINITIONS: Record<NodeType, NodeDefinition> = {
     category: "output",
     requiredInputs: ["account_to_send", "messages"],
     optionalInputs: [],
-    outputs: ["result"], // 🔥 统一为单一 result 输出
+    outputs: ["status_output_handle", "error_handle"],
+  },
+
+  // Interactive Nodes
+  candleline_node: {
+    type: "candleline_node",
+    description:
+      "Interactive K-line (candlestick) chart with drawing tools and threshold triggers",
+    category: "input", // 归类为 input，因为它接收价格数据并输出分析结果
+    requiredInputs: ["price_data"],
+    optionalInputs: [],
+    outputs: ["data"],
   },
 };
 
