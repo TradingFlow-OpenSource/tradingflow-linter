@@ -145,6 +145,24 @@ const NODE_DEFINITIONS: Record<NodeType, NodeDefinition> = {
     requiredInputs: ['account_to_send', 'messages'],
     optionalInputs: [],
     outputs: ['status_output_handle', 'error_handle']  // 🔥 添加输出定义
+  },
+
+  // Interactive Nodes
+  'candleline_node': {
+    type: 'candleline_node',
+    description: 'Interactive K-line (candlestick) chart with drawing tools and threshold triggers',
+    category: 'input',  // 归类为 input，因为它接收价格数据并输出分析结果
+    requiredInputs: ['price_data'],
+    optionalInputs: [],
+    outputs: ['data']
+  },
+  'price_node': {
+    type: 'price_node',
+    description: 'Get cryptocurrency price data from CoinGecko',
+    category: 'input',
+    requiredInputs: ['token'],
+    optionalInputs: ['vs_currency', 'days', 'interval'],
+    outputs: ['output_data']
   }
 };
 

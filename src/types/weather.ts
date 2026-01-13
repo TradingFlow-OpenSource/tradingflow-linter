@@ -82,6 +82,7 @@ export type NodeType =
   | 'rss_listener_node'
   | 'binance_price_node'
   | 'dataset_input_node'
+  | 'price_node'
   // Compute Nodes
   | 'ai_model_node'
   | 'code_node'
@@ -92,7 +93,9 @@ export type NodeType =
   | 'vault_node'
   // Output Nodes
   | 'dataset_output_node'
-  | 'telegram_sender_node';
+  | 'telegram_sender_node'
+  // Interactive Nodes
+  | 'candleline_node';
 
 /**
  * 边的类型（样式）
