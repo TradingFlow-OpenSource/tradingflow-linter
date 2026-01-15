@@ -90,6 +90,7 @@ export type NodeType =
   | "gsheet_input_node"
   | "price_node"
   | "rootdata_node"
+  | "chaincatcher_node"
   // Compute Nodes
   | "ai_model_node"
   | "code_node"

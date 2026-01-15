@@ -127,6 +127,21 @@ const NODE_DEFINITIONS: Record<NodeType, NodeDefinition> = {
     ],
     outputs: ["data"],
   },
+  chaincatcher_node: {
+    type: "chaincatcher_node",
+    description: "Fetch articles and news flash from ChainCatcher",
+    category: "input",
+    requiredInputs: ["content_type"],
+    optionalInputs: [
+      "language",
+      "feat_type",
+      "article_type",
+      "news_flash_type",
+      "page",
+      "limit",
+    ],
+    outputs: ["data"],
+  },
 
   // Compute Nodes
   ai_model_node: {
