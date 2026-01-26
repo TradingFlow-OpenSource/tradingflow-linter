@@ -73,37 +73,5 @@ export interface FlowData {
   edges: Edge[];
 }
 
-/**
- * @deprecated 使用 NodeType from './types/weather'
- */
-export type NodeType =
-  // Input Nodes
-  | "price_node"
-  | "dataset_input_node"
-  | "gsheet_input_node"
-  | "x_listener_node"
-  | "rootdata_node"
-  // Compute Nodes
-  | "ai_model_node"
-  | "code_node"
-  // Trade Nodes
-  | "swap_node"
-  | "buy_node"
-  | "sell_node"
-  | "vault_node"
-  // Output Nodes
-  | "dataset_output_node"
-  | "gsheet_output_node"
-  | "telegram_sender_node";
-
-/**
- * @deprecated 创建新的节点定义接口在 weather.ts
- */
-export interface NodeDefinition {
-  type: NodeType;
-  description: string;
-  category: "input" | "compute" | "trade" | "output";
-  requiredInputs: string[];
-  optionalInputs: string[];
-  outputs: string[];
-}
+// NodeType 已从 weather.ts 导出，不再在此重复定义
+// 使用: import { NodeType } from './types/weather'
