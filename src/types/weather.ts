@@ -84,9 +84,6 @@ export type NodeCollection =
 export type NodeType =
   // Input Nodes
   | "x_listener_node"
-  | "rss_listener_node"
-  | "binance_price_node"
-  | "dataset_input_node"
   | "gsheet_input_node"
   | "price_node"
   | "rootdata_node"
@@ -100,8 +97,8 @@ export type NodeType =
   | "swap_node"
   | "vault_node"
   // Output Nodes
-  | "dataset_output_node"
   | "gsheet_output_node"
+  | "gdoc_output_node"
   | "telegram_sender_node"
   // Interactive Nodes
   | "candleline_node";

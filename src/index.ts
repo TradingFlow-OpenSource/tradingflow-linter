@@ -52,30 +52,6 @@ const NODE_DEFINITIONS: Record<NodeType, NodeDefinition> = {
     optionalInputs: [],
     outputs: ["data"],
   },
-  binance_price_node: {
-    type: "binance_price_node",
-    description: "Get Binance market data for specified trading pairs",
-    category: "input",
-    requiredInputs: ["symbol", "interval"],
-    optionalInputs: ["limit"],
-    outputs: ["current_price", "kline_data"],
-  },
-  rss_listener_node: {
-    type: "rss_listener_node",
-    description: "Get information from RSS feeds",
-    category: "input",
-    requiredInputs: ["route"],
-    optionalInputs: ["parameters", "keywords"],
-    outputs: ["feeds"],
-  },
-  dataset_input_node: {
-    type: "dataset_input_node",
-    description: "Load dataset from user's Google Sheets",
-    category: "input",
-    requiredInputs: ["doc_link"],
-    optionalInputs: [],
-    outputs: ["data"],
-  },
   gsheet_input_node: {
     type: "gsheet_input_node",
     description: "Load data from Google Sheets",
@@ -211,20 +187,20 @@ const NODE_DEFINITIONS: Record<NodeType, NodeDefinition> = {
   },
 
   // Output Nodes
-  dataset_output_node: {
-    type: "dataset_output_node",
-    description: "Save data to user's Google Sheets",
-    category: "output",
-    requiredInputs: ["doc_link", "data"],
-    optionalInputs: [],
-    outputs: [],
-  },
   gsheet_output_node: {
     type: "gsheet_output_node",
     description: "Save data to Google Sheets",
     category: "output",
     requiredInputs: ["doc_link", "data"],
     optionalInputs: [],
+    outputs: ["status_output_handle", "error_handle"],
+  },
+  gdoc_output_node: {
+    type: "gdoc_output_node",
+    description: "Write content to Google Docs",
+    category: "output",
+    requiredInputs: ["doc_link", "content"],
+    optionalInputs: ["mode"],
     outputs: ["status_output_handle", "error_handle"],
   },
   telegram_sender_node: {
