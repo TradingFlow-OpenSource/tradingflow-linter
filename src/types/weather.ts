@@ -33,7 +33,8 @@ export type InputType =
   | "paramMatrix"
   | "boolean" // 布尔开关（True/False Toggle）
   | "switch" // Switch 切换器（Number/Percentage）
-  | "percentage"; // 百分比滑块（0-100%）
+  | "percentage" // 百分比滑块（0-100%）
+  | "password"; // 密码/密钥输入（R&D Mode）
 
 /**
  * 数据类型
@@ -58,7 +59,8 @@ export type DataType =
   | "wallet" // 钱包地址类型
   | "chain" // 区块链类型
   | "switch" // Switch 切换器
-  | "percentage"; // 百分比（0-100%）
+  | "percentage" // 百分比（0-100%）
+  | "password"; // 密码/密钥（R&D Mode，遮掩显示）
 
 /**
  * Handle 颜色（连接句柄颜色）
@@ -96,6 +98,9 @@ export type NodeType =
   | "sell_node"
   | "swap_node"
   | "vault_node"
+  // R&D Mode Trade Nodes
+  | "private_key_node"
+  | "exchange_api_node"
   // Output Nodes
   | "gsheet_output_node"
   | "gdoc_output_node"

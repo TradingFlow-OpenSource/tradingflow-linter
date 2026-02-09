@@ -185,6 +185,23 @@ const NODE_DEFINITIONS: Record<NodeType, NodeDefinition> = {
     optionalInputs: [],
     outputs: ["vault"], // 🔥 修复：统一为单一 vault 输出
   },
+  // R&D Mode Trade Nodes
+  private_key_node: {
+    type: "private_key_node",
+    description: "Store a blockchain private key and output an Operator for CodeNode (R&D Mode)",
+    category: "trade",
+    requiredInputs: ["chain", "private_key"],
+    optionalInputs: [],
+    outputs: ["operator"],
+  },
+  exchange_api_node: {
+    type: "exchange_api_node",
+    description: "Store exchange API credentials and output an Operator for CodeNode (R&D Mode)",
+    category: "trade",
+    requiredInputs: ["exchange", "api_key", "api_secret"],
+    optionalInputs: ["passphrase"],
+    outputs: ["operator"],
+  },
 
   // Output Nodes
   gsheet_output_node: {
